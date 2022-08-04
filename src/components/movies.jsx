@@ -6,7 +6,7 @@ class Movies extends Component{
         movies: getMovies()
     };
     handleDelete = movie => {
-        const filterMovie = m => {
+        const filterMovie = m => { // 'm' is copy of 'movies' array
             console.log(m._id);
             return m._id !== movie._id; // Condition: Return all movies in array 'm' except with 'movie._id'
         }
