@@ -1,23 +1,28 @@
 import React, { Component } from 'react';
-import {getMovies} from '../services/fakeMovieService';
+import movies, {getMovies} from '../services/fakeMovieService';
 
-class Movies extends Component {
-    state = { 
+class Movies extends Component{
+    state = {
         movies: getMovies()
     };
     handleDelete = movie => {
-        const movies = this.state.movies.filter(m => m._id !== movie._id);
+        const filterMovie = m => {
+            console.log(m._id);
+            return m._id !== movie._id; // Condition: Return all movies in array 'm' except with 'movie._id'
+        }
+        const movies = this.state.movies.filter(filterMovie);
         this.setState({movies});
-    } 
-    render() { 
-        const {length: count} = this.state.movies;
-        if(count === 0)
+    }
+    render(){
+        const {length : count} = this.state.movies;
+        if(count === 0){
             return <p>There are no movies in the database.</p>
+        }
         else
-        return (
-            <React.Fragment>
-            <p>Showing {count} movies in the databse.</p>
-            <table className="table">
+        return(
+        <React.Fragment>
+            <p>Showing {count} movies in the database.</p>
+            <table className='table'>
                 <thead>
                     <tr>
                         <th>Title</th>
@@ -36,11 +41,11 @@ class Movies extends Component {
                         <td>{movie.dailyRentalRate}</td>
                         <td><button onClick={() => this.handleDelete(movie)} className='btn btn-danger btn-sm'>Delete</button></td>
                     </tr>
-                    ))}
+                ))}
                 </tbody>
             </table>
-            </React.Fragment>
-        );
+        </React.Fragment>
+        )   
     }
 }
  
