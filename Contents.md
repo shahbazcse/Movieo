@@ -1,52 +1,52 @@
-1 ES6 Refresher:
+1. ES6 Refresher:
 
-1.1 Let vs Var vs Const
-1.2 Objects
-1.3 this Keyword
-1.4 Binding this
-1.5 Arrow Functions
-1.6 Arrow Functions and this
-1.7 Array.map Method
-1.8 Object Destructuring
-1.9 Spread Operator
-1.10 Classes
-1.11 Inheritance
-1.12 Modules
-1.13 Named and Default Exports
+    1.1 Let vs Var vs Const  
+    1.2 Objects  
+    1.3 this Keyword  
+    1.4 Binding this  
+    1.5 Arrow Functions  
+    1.6 Arrow Functions and this  
+    1.7 Array.map Method  
+    1.8 Object Destructuring  
+    1.9 Spread Operator  
+    1.10 Classes  
+    1.11 Inheritance  
+    1.12 Modules  
+    1.13 Named and Default Exports  
 
-2 Components:
+2. Components:
 
-2.1 Specifying Children
-2.2 Embedded Expressions
-2.3 Setting Attributes
-2.4 Rendering Classes Dynamically
-2.5 Rendering Lists
-2.6 Conditional Rendering
-2.7 Handling Events
-2.8 Binding Event Handlers
-2.9 Updating the State
-2.10 Change of State
-2.11 Passing Event Arguments
+    2.1 Specifying Children  
+    2.2 Embedded Expressions  
+    2.3 Setting Attributes  
+    2.4 Rendering Classes Dynamically  
+    2.5 Rendering Lists  
+    2.6 Conditional Rendering  
+    2.7 Handling Events  
+    2.8 Binding Event Handlers  
+    2.9 Updating the State  
+    2.10 Change of State  
+    2.11 Passing Event Arguments  
 
-3 Composing Components:
+3. Composing Components:
 
-3.1 Composing Components
-3.2 Passing Data to Components
-3.3 Passing Children
-3.4 Debugging React Apps
-3.5 Props vs State
-3.6 Raising and Handling Events
-3.7 Updating the State
-3.8 Single Source of Truth
-3.9 Removing the Local State
-3.10 Multiple Components in Sync
-3.11 Lifting the State Up
-3.12 Stateless Functional Components
-3.13 Destructuring Arguments
-3.14 Lifecycle Hooks
-3.15 Mounting Phase
-3.16 Updating Phase
-3.17 Unmounting Phase
+    3.1 Composing Components  
+    3.2 Passing Data to Components  
+    3.3 Passing Children  
+    3.4 Debugging React Apps  
+    3.5 Props vs State  
+    3.6 Raising and Handling Events  
+    3.7 Updating the State  
+    3.8 Single Source of Truth  
+    3.9 Removing the Local State  
+    3.10 Multiple Components in Sync  
+    3.11 Lifting the State Up  
+    3.12 Stateless Functional Components  
+    3.13 Destructuring Arguments  
+    3.14 Lifecycle Hooks  
+    3.15 Mounting Phase  
+    3.16 Updating Phase  
+    3.17 Unmounting Phase  
 
 ## 1. ES6 Refresher
 
