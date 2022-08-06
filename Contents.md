@@ -244,7 +244,9 @@ console.log(person.name);
   1. Modules allow you to break up the code into separate file</br>
   2. Modules makes it easier to maintain the codebase.</br>
   3. JavaScript Modules rely on _import_ and _export_ statements</br>
-  <img src="https://2r4s9p1yi1fa2jd7j43zph8r-wpengine.netdna-ssl.com/files/2018/03/04_import_graph.png" height="600" width="1000px" class="rounded">
+  <p align="center">
+    <img src="https://2r4s9p1yi1fa2jd7j43zph8r-wpengine.netdna-ssl.com/files/2018/03/04_import_graph.png" height="600" width="1000px">
+  </p>
 
 #### 1.13 Named and Default Exports/Imports
 
@@ -289,16 +291,338 @@ console.log(person.name);
 ## 2. Components
 
 #### 2.1 Specifying Children
+```
+import React, { Component } from "react";
+
+class Counter extends Component {
+    render(){
+        return (
+            <div> // Parent
+                <h1>Hello World</h1> // Children
+                <button>Increment</button> // Children
+            </div>
+        )
+    }
+}
+```
 #### 2.2 Embedded Expressions
+```
+import React, { Component } from "react";
+
+class Counter extends Component {
+    // state includes any data that this component needs
+    state = {
+        count : 0
+     }; 
+
+    render(){
+        return (
+            <div>
+                <span>{this.state.count}</span> // Embedded Expression
+                <span>{this.formatCount()}</span> // Embedded Expression
+                <button>Increment</button>
+            </div>
+        )
+    }
+    formatCount(){
+        const {count} = this.state; // Object Destructuring
+        return count === 0 ? "Zero" : count;
+    }
+}
+```
 #### 2.3 Setting Attributes
+```
+import React, { Component } from "react";
+
+class Counter extends Component {
+    state = {
+        count : 0,
+        imageUrl: 'https://picsum.photos/200'
+    };
+    
+    styles = {
+        fontSize : 10,
+        fontWeight : 'bold'
+    }
+
+    render(){
+        return (
+            <div>
+                <img style={this.styles} src={this.state.imageUrl} alt=""></img> // Setting Attributes using src and style
+                <span className="badge badge-primary m-2">{this.formatCount()}</span> // Setting Attributes using className
+                <button className="btn btn-secondary btn-sm">Increment</button> // Setting Attributes using className
+            </div>
+        )
+    }
+    formatCount(){
+        const {count} = this.state;
+        return count === 0 ? "Zero" : count;
+    }
+}
+```
 #### 2.4 Rendering Classes Dynamically
+```
+import React, { Component } from "react";
+
+class Counter extends Component {
+    state = {
+        count : 0,
+    };
+
+    render(){
+        return (
+            <div>
+                <span className={this.getBadgeClasses()}>{this.formatCount()}</span>
+                <button className="btn btn-secondary btn-sm">Increment</button>
+            </div>
+        )
+    }
+
+    // Rendering Classes Dynamically
+    getBadgeClasses() {
+        let classes = "badge m-2 badge-";
+        classes += this.state.count === 0 ? "warning" : "primary";
+        return classes;
+    }
+
+    formatCount(){
+        const {count} = this.state;
+        return count === 0 ? "Zero" : count;
+    }
+}
+```
 #### 2.5 Rendering Lists
+```
+import React, { Component } from "react";
+
+class Counter extends Component {
+    state = {
+        count : 0,
+        tags : ['tag1', 'tag2', 'tag3']
+    };
+
+    render(){
+        return (
+            <div>
+                <span className={this.getBadgeClasses()}>{this.formatCount()}</span>
+                <button className="btn btn-secondary btn-sm">Increment</button>
+                <ul>
+                    {this.state.tags.map(tag => <li key={tag}>{tag}</li>)} // Rendering Lists using Array.map Method
+                </ul>
+            </div>
+        )
+    }
+    
+    getBadgeClasses() {
+        let classes = "badge m-2 badge-";
+        classes += this.state.count === 0 ? "warning" : "primary";
+        return classes;
+    }
+
+    formatCount(){
+        const {count} = this.state;
+        return count === 0 ? "Zero" : count;
+    }
+}
+```
 #### 2.6 Conditional Rendering
+```
+import React, { Component } from "react";
+
+class Counter extends Component {
+    state = {
+        count : 0,
+        tags : ['tag1', 'tag2', 'tag3']
+    };
+
+    // Conditional Rendering
+    renderTags(){
+        if(this.state.tag.length === 0)
+            return <p>There are no tags</p>;
+        else
+            return <ul>{this.state.tags.map(tag => <li key={tag}>{tag}</li>)}</ul>;
+    }
+
+    render(){
+        return (
+            <div>
+                /* If first expression is true and second expression is also true (non-zero string are truthy), 
+                    the last operand is returned */
+                {this.state.tags.length === 0 && "Please create a new tag!"}
+                {this.renderTags()}
+            </div>
+        )
+    }
+}
+```
 #### 2.7 Handling Events
+```
+import React, { Component } from "react";
+
+class Counter extends Component {
+    state = {
+        count : 0
+    };
+
+    // Handling Event
+    handleIncrement(){
+        console.log("Increment Clicked");
+    }
+
+    render(){
+        return (
+            <div>
+                <span className={this.getBadgeClasses()}>{this.formatCount()}</span>
+                <button onClick={this.handleIncrement} // Passing 'handleIncrement' reference inside 'onClick' event handler
+                        className="btn btn-secondary btn-sm">
+                            Increment
+                </button>
+            </div>
+        )
+    }
+    
+    getBadgeClasses() {
+        let classes = "badge m-2 badge-";
+        classes += this.state.count === 0 ? "warning" : "primary";
+        return classes;
+    }
+
+    formatCount(){
+        const {count} = this.state;
+        return count === 0 ? "Zero" : count;
+    }
+}
+```
 #### 2.8 Binding Event Handlers
+```
+import React, { Component } from "react";
+
+class Counter extends Component {
+    state = {
+        count : 0
+    };
+
+    // Binding Event Handler using bind Method
+    constructor(){
+        super();
+        this.handleIncrement = this.handleIncrement.bind(this); // Binds 'this' to handleIncrement using Constructor to avoid undefined 'this' error
+        console.log("Constructor");
+    }
+
+    handleIncrement(){
+        console.log("Increment Clicked", this);
+    }
+
+    // Alternatively using Arrow Function to inherit 'this' directly
+    handleIncrement = () => {
+        console.log("Increment Clicked", this);
+    }
+
+    render(){
+        return (
+            <div>
+                <span className={this.getBadgeClasses()}>{this.formatCount()}</span>
+                <button onClick={this.handleIncrement} className="btn btn-secondary btn-sm">Increment</button>
+            </div>
+        )
+    }
+    
+    getBadgeClasses() {
+        let classes = "badge m-2 badge-";
+        classes += this.state.count === 0 ? "warning" : "primary";
+        return classes;
+    }
+
+    formatCount(){
+        const {count} = this.state;
+        return count === 0 ? "Zero" : count;
+    }
+}
+```
 #### 2.9 Updating the State
+```
+import React, { Component } from "react";
+
+class Counter extends Component {
+    state = {
+        count : 0
+    };
+
+    handleIncrement(){
+        this.setState({count: this.state.count + 1}); // using 'setState' to update state
+    }
+
+    render(){
+        return (
+            <div>
+                <span className={this.getBadgeClasses()}>{this.formatCount()}</span>
+                <button onClick={this.handleIncrement} className="btn btn-secondary btn-sm">Increment</button>
+            </div>
+        )
+    }
+    
+    getBadgeClasses() {
+        let classes = "badge m-2 badge-";
+        classes += this.state.count === 0 ? "warning" : "primary";
+        return classes;
+    }
+
+    formatCount(){
+        const {count} = this.state;
+        return count === 0 ? "Zero" : count;
+    }
+}
+```
 #### 2.10 Change of State
+
+1. When using setState, the state changes.
+2. React puts the old VDOM and modified VDOM side by side and compare them.
+3. Here, only span is modified as we are using formatCount() in it.
+4. After analysing, React will update only the modified part of the VDOM with the Real DOM.
+5. Except the span, no where else in Real DOM is changed.
+<p align="center">
+    <img src="https://miro.medium.com/max/1838/1*eDpgmIW3vBGj6m64GGlFVw.gif" height="850px" width="850px">
+</p>
+
 #### 2.11 Passing Event Arguments
+```
+import React, { Component } from "react";
+
+class Counter extends Component {
+    state = {
+        count : 0
+    };
+
+    handleIncrement = product => {
+        console.log(product);
+        this.setState({count: this.state.count + 1}); // using 'setState' to update state
+    };
+
+    render(){
+        return (
+            <div>
+                <span className={this.getBadgeClasses()}>{this.formatCount()}</span>
+                /* To pass arguments through 'handleIncrement()', pass arrow function inside 
+                    the 'onClick' event handler and pass the argument */
+                <button onClick={() => this.handleIncrement(product)}
+                        className="btn btn-secondary btn-sm">Increment
+                </button>
+            </div>
+        )
+    }
+    
+    getBadgeClasses() {
+        let classes = "badge m-2 badge-";
+        classes += this.state.count === 0 ? "warning" : "primary";
+        return classes;
+    }
+
+    formatCount(){
+        const {count} = this.state;
+        return count === 0 ? "Zero" : count;
+    }
+}
+```
 
 ## 3. Composing Components
 
