@@ -401,7 +401,9 @@ class Counter extends Component {
         return (
             <div>
                 <img style={this.styles} src={this.state.imageUrl} alt=""></img> // Setting Attributes using src and style
+
                 <span className="badge badge-primary m-2">{this.formatCount()}</span> // Setting Attributes using className
+                
                 <button className="btn btn-secondary btn-sm">Increment</button> // Setting Attributes using className
             </div>
         )
@@ -600,7 +602,7 @@ class Counter extends Component {
         count : 0
     };
 
-    handleIncrement(){
+    handleIncrement = () => {
         this.setState({count: this.state.count + 1}); // using 'setState' to update state
     }
 
@@ -625,7 +627,7 @@ class Counter extends Component {
     }
 }
 ```
-#### 2.10 Change of State
+#### 2.10 What Happens When State Changes
 
 1. When using setState, the state changes.
 2. React puts the old VDOM and modified VDOM side by side and compare them.
@@ -674,4 +676,744 @@ class Counter extends Component {
         return count === 0 ? "Zero" : count;
     }
 }
+```
+## 3. Composing Components:
+
+#### 3.1 Composing Components  
+```
+import React, { Component } from "react";
+import Counter from "./counter";
+
+class Counters extends Component {
+    state = {
+        counters: [
+            {id:1, value: 4},
+            {id:2, value: 0},
+            {id:3, value: 0},
+            {id:4, value: 0}
+        ]
+    };
+
+    render() {
+        return (
+            <div>
+                {this.state.counters.map(counters => <Counter key={counter.id}/>)} // composing counter component
+            </div>
+        );
+    }
+}
+
+export default Counters;
+```
+#### 3.2 Passing Data to Components  
+```
+// In counters.js
+import React, { Component } from "react";
+import Counter from "./counter";
+
+class Counters extends Component {
+    state = {
+        counters: [
+            {id:1, value: 4},
+            {id:2, value: 0},
+            {id:3, value: 0},
+            {id:4, value: 0}
+        ]
+    };
+
+    render() {
+        return (
+            <div>
+                {this.state.counters.map(counter => 
+                    <Counter key={counter.id} // Passing data to components
+                             value={counter.value} // Passing data to components
+                             selected={true} // Passing data to components
+                    />)}
+            </div>
+        );
+    }
+}
+
+export default Counters;
+
+// In counter.js
+    class Counter extends Components {
+            state = {
+                value: this.props.value // 'props' are used to pass data from a parent component(Counters) to a child component(Counter)
+            };
+
+        handleIncrement = () => {
+            this.setState({count:this.state.value + 1});
+        };
+        render(){...}
+    }
+    export deafult Counter;
+```
+#### 3.3 Passing Children  
+```
+import React, { Component } from "react";
+import Counter from "./counter";
+
+class Counters extends Component {
+    state = {
+        counters: [
+            {id:1, value: 4},
+            {id:2, value: 0},
+            {id:3, value: 0},
+            {id:4, value: 0}
+        ]
+    };
+
+    render() {
+        return (
+            <div>
+                {this.state.counters.map(counter => (
+                    <Counter key={counter.id}
+                             value={counter.value}
+                             id={counter.id}
+                    >
+                    <h4>Counter #{counter.id}</h4> // Children Component
+                    </Counter>
+                    ))}
+            </div>
+        );
+    }
+}
+
+export default Counters;
+
+// In counter.js
+    class Counter extends Components {
+            state = {
+                value: this.props.value
+            };
+
+        handleIncrement = () => {
+            this.setState({count:this.state.value + 1});
+        };
+        render(){
+            return(
+                <div>
+                    <h4>{this.props.id}</h4> // Passing children component
+                </div>
+            )
+        }
+    }
+    export deafult Counter;
+```
+#### 3.4 Debugging React Apps  
+React Developer Tools Extension for Chrome and Firefox
+Chrome: https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi?hl=en
+Firefox: https://addons.mozilla.org/en-US/firefox/addon/react-devtools/
+
+#### 3.5 Props vs State  
+##### Props:
+    1.  Props are used to pass data from one component to another.
+    2.  Attributes (i.e. key, value, id) are the part of props, input to the components.
+        ```
+        <Counter key={counter.id} value={counter.value} id={counter.id}>
+        ```
+    3.  When a components does not have any state, it may get the data that it needs via props.
+    4.  Props is read-only, we cannot change the input inside the children component.
+    5.  Props can be used with state and functional components.
+##### State:
+    1.  State is used to pass data within the component only.
+    2.  State is a local storage that is local to the component only and cannot be passed to other components.
+    3.  State can be used only with the state components/class components.
+    4.  State is both read and write.
+    5.  setState method is used to update the state values in the component.
+
+#### 3.6 Raising and Handling Events  
+
+The component that owns a piece of the state, should be the one modifying it.
+
+```
+// In counters.js
+import React, { Component } from "react";
+import Counter from "./counter";
+
+class Counters extends Component {
+    state = {
+        counters: [
+            {id:1, value: 4},
+            {id:2, value: 0},
+            {id:3, value: 0},
+            {id:4, value: 0}
+        ]
+    };
+    
+    // Event Handler
+    handleDelete = () => {
+        console.log("handleDelete Called");
+    };
+
+    render() {
+        return (
+            <div>
+                {this.state.counters.map(counter => (
+                    <Counter key={counter.id}
+                             value={counter.value}
+                             id={counter.id}
+                             onDelete={this.handleDelete} // props 'onDelete' included having the same name as raised event in child component
+                    />
+                    ))}
+            </div>
+        );
+    }
+}
+
+export default Counters;
+
+// In counter.js
+    class Counter extends Components {
+            state = {
+                value: this.props.value
+            };
+
+        handleIncrement = () => {
+            this.setState({count:this.state.value + 1});
+        };
+        render(){
+            return(
+                <div>
+                    <button onClick={this.props.onDelete}>Delete</button> // 'onDelete' event /shahvpassed using props
+                </div>
+            )
+        }
+    }
+    export deafult Counter;
+```
+#### 3.7 Updating the State  
+```
+// In counters.js
+import React, { Component } from "react";
+import Counter from "./counter";
+
+class Counters extends Component {
+    state = {
+        counters: [
+            {id:1, value: 4},
+            {id:2, value: 0},
+            {id:3, value: 0},
+            {id:4, value: 0}
+        ]
+    };
+    
+    // Event Handler
+    handleDelete = (counterId) => { // 'counterId' will specify which counter to remove
+        let counters = this.state.counters.filter(c => c.id !== counterId);
+        this.setState({counters}); // updating the state
+    };
+
+    render() {
+        return (
+            <div>
+                {this.state.counters.map(counter => (
+                    <Counter key={counter.id}
+                             onDelete={this.handleDelete}
+                             counter={counter} // passing the counter object itself
+                    />
+                    ))}
+            </div>
+        );
+    }
+}
+
+export default Counters;
+
+// In counter.js
+    class Counter extends Components {
+            state = {
+                value: this.props.counter.value
+            };
+
+        handleIncrement = () => {
+            this.setState({count:this.state.value + 1});
+        };
+        render(){
+            return(
+                <div>
+                    <button onClick={() => this.props.onDelete(this.props.counter.id)}>Delete</button> // Passing counter component with unique id
+                </div>
+            )
+        }
+    }
+    export deafult Counter;
+```
+#### 3.8 Single Source of Truth  
+Single source of truth is one master state for most if not all of the application, it send that state down as props to all the child components.
+```
+// In counters.js
+import React, { Component } from "react";
+import Counter from "./counter";
+
+class Counters extends Component {
+    state = {
+        counters: [
+            {id:1, value: 4},
+            {id:2, value: 0},
+            {id:3, value: 0},
+            {id:4, value: 0}
+        ]
+    };
+    
+    // Event Handler
+    handleDelete = (counterId) => {
+        const counters = this.state.counters.filter(c => c.id !== counterId);
+        this.setState({counters});
+    };
+
+    // Reseting Values of Components
+    handleReset = () => {
+        const counters = this.state.counters.map(c => {
+            c.value = 0;
+            return c;
+        });
+        this.setState({counters});
+    }
+    render() {
+        return (
+            <div>
+                // Reset button invoking handleReset
+                <button 
+                    onClick={this.handleReset}
+                    className="btn btn-primary btn-sm m-2">Reset</button>
+                {this.state.counters.map(counter => (
+                    <Counter key={counter.id}
+                             onDelete={this.handleDelete}
+                             counter={counter}
+                    />
+                    ))}
+            </div>
+        );
+    }
+}
+
+export default Counters;
+
+// In counter.js
+    class Counter extends Components {
+            state = {
+                value: this.props.counter.value
+            };
+
+        handleIncrement = () => {
+            this.setState({count:this.state.value + 1});
+        };
+        render(){
+            return(
+                <div>
+                    <button onClick={() => this.props.onDelete(this.props.counter.id)}>Delete</button>
+                </div>
+            )
+        }
+    }
+    export deafult Counter;
+```
+#### 3.9 Removing the Local State  
+```
+// In counters.js
+import React, { Component } from "react";
+import Counter from "./counter";
+
+class Counters extends Component {
+    state = {
+        counters: [
+            {id:1, value: 4},
+            {id:2, value: 0},
+            {id:3, value: 0},
+            {id:4, value: 0}
+        ]
+    };
+
+    handleIncrement = counter => {
+        const counters = {...this.state.counters};
+        const index = counters.indexOf(counter);
+        counters[index] = {...counter};
+        counters[index].value++;
+        this.setState({counters});
+    }
+    
+    // Event Handler
+    handleDelete = (counterId) => {
+        const counters = this.state.counters.filter(c => c.id !== counterId);
+        this.setState({counters});
+    };
+
+    // Reseting Values of Components
+    handleReset = () => {
+        const counters = this.state.counters.map(c => {
+            c.value = 0;
+            return c;
+        });
+        this.setState({counters});
+    }
+    render() {
+        return (
+            <div>
+                // Reset button invoking handleReset
+                <button 
+                    onClick={this.handleReset}
+                    className="btn btn-primary btn-sm m-2">Reset</button>
+                {this.state.counters.map(counter => (
+                    <Counter key={counter.id}
+                             onDelete={this.handleDelete}
+                             onIncrement={this.handleIncrement}
+                             counter={counter}
+                    />
+                    ))}
+            </div>
+        );
+    }
+}
+
+export default Counters;
+
+// In counter.js
+    class Counter extends Components {
+    // Local State is removed from the child component and the event handlers are moved to the parent component which can be called in child component via props.
+        render(){
+            return(
+                <div>
+                    <span className={this.getBadgeClasses()}>{this.formatCount()}</span>
+                    <button onClick={() => this.props.onIncrement(this.props.counter)} className="btn btn-secondary btn-sm">Increment</button>
+                    <button onClick={() => this.props.onDelete(this.props.counter.id)}>Delete</button>
+                </div>
+            )
+        }
+    }
+
+    getBadgeClasses(){
+        let classes = "badge m-2 badge-";
+        classe += this.props.counter.value === 0 ? "warning" : "primary";
+        return classes;
+    }
+
+    formatCount(){
+        const {value} = this.props.counter;
+        return value === 0 ? "Zero" ? value;
+    }
+    export deafult Counter;
+```
+#### 3.10 Multiple Components in Sync  
+1. Earlier we passed the state of the 'counters' component to 'counter' component via props, it could be achieved because of the parent-child relationship between the 'counters' and 'counter' components.
+
+2. If we add a 'NavBar' component, there will not be any relationship between the 'counters' and the 'NavBar' component.
+
+3. In such situations, where there is no parent-child relationship between two components and we want to keep them in sync and share data between them, we lift the state up to a master component above these two components in question.
+
+4. Hence, both the child components now have a same parent, and we can pass the state to all the child components via props.
+
+#### 3.11 Lifting the State Up  
+```
+// In App.js
+class App extends Component {
+    // Moving the state and event handlers in parent component to lift the state up.
+    state = {
+        counters: [
+            {id:1, value: 4},
+            {id:2, value: 0},
+            {id:3, value: 0},
+            {id:4, value: 0}
+        ]
+    };
+
+    handleIncrement = counter => {
+        const counters = {...this.state.counters};
+        const index = counters.indexOf(counter);
+        counters[index] = {...counter};
+        counters[index].value++;
+        this.setState({counters});
+    }
+    
+    // Event Handler
+    handleDelete = (counterId) => {
+        const counters = this.state.counters.filter(c => c.id !== counterId);
+        this.setState({counters});
+    };
+
+    // Reseting Values of Components
+    handleReset = () => {
+        const counters = this.state.counters.map(c => {
+            c.value = 0;
+            return c;
+        });
+        this.setState({counters});
+    }
+    render() {
+        return (
+            <React.Fragment>
+                <NavBar 
+                    totalCounters={this.state.counters.filter(c => c.value > 0).length}
+                />
+                <main className="container">
+                    <Counters
+                        counters={this.state.counters}
+                        onReset={this.handleReset}
+                        onIncrement={this.handleIncrement}
+                        onDelete={this.handleDelete}
+                    />
+                </main>
+            </React.Fragment>
+        )
+    }
+}
+
+export default App;
+
+// In counters.js
+import React, { Component } from "react";
+import Counter from "./counter";
+
+class Counters extends Component {
+    render() {
+        return (
+            <div>
+                // event handlers invoked via props
+                <button 
+                    onClick={this.props.onReset}
+                    className="btn btn-primary btn-sm m-2">Reset</button>
+                {this.props.counters.map(counter => (
+                    <Counter key={counter.id}
+                             onDelete={this.props.onDelete}
+                             onIncrement={this.props.onIncrement}
+                             counter={counter}
+                    />
+                    ))}
+            </div>
+        );
+    }
+}
+
+export default Counters;
+```
+#### 3.12 Stateless Functional Components  
+Stateless Functional Components can be created:
+1. In a component, when we only have a single render method.
+2. Also, when we don't have any state as we are getting the data using props.
+3. In such situations, we can convert the component into a Stateless Functional Component.
+4. So instead of using a class to define the component, we can use a function to define the component.
+```
+// In navbar.js
+    // Stateless Functional Component
+    const NavBar = (props) => { // props object will passed as an argument to this function in runtime.
+        return (
+            <nav className="navbar navbar-light bg-light">
+                <a className="navbar-brand" href="#">
+                    <span className="badge badge-pill badge-secondary">
+                        {props.totalCounters}
+                    </span>
+                </a>
+            </nav>
+        );
+    };
+
+export default NavBar;
+```
+#### 3.13 Destructuring Arguments  
+```
+// In navbar.js
+    // Stateless Functional Component
+    const NavBar = ({totalCounters}) => {
+        return (
+            <nav className="navbar navbar-light bg-light">
+                <a className="navbar-brand" href="#">
+                    <span className="badge badge-pill badge-secondary">
+                        {totalCounters} // Destructuring Arguments
+                    </span>
+                </a>
+            </nav>
+        );
+    };
+
+export default NavBar;
+
+// In counters.js
+import React, { Component } from "react";
+import Counter from "./counter";
+
+class Counters extends Component {
+    const {onReset, onDelete, onIncrement, counters} = this.props; // Destructuring Arguments
+    render() {
+        return (
+            <div>
+                // event handlers invoked via props
+                <button 
+                    onClick={onReset}
+                    className="btn btn-primary btn-sm m-2">Reset</button>
+                {counters.map(counter => (
+                    <Counter key={counter.id}
+                             onDelete={onDelete}
+                             onIncrement={onIncrement}
+                             counter={counter}
+                    />
+                    ))}
+            </div>
+        );
+    }
+}
+
+export default Counters;
+```
+#### 3.14 Lifecycle Hooks  
+A. When writing React components, we need access to lifecycle events to handle a variety of side effects:
+    1. Like fetching data on mount
+    2. Changing props when the component updates
+    3. Cleaning up before the component unmounts, etc.
+
+B. Lifecycle Hooks can only be used in class components. It cannot be used in functional components.
+
+C. Each React component has a life cycle, which consists of three phases:
+
+    1. Mounting Phase: The mounting phase is when a new component is created and inserted into the DOM or, in other words, when the life of a component begins. This can only happen once, and is often called “initial render.”
+    2. Updating Phase: The updating phase is when the component updates or re-renders. This reaction is triggered when the props are updated or when the state is updated. This phase can occur multiple times, which is kind of the point of React.
+    3. Unmounting Phase: The last phase within a component's lifecycle is the unmounting phase, when the component is removed from the DOM.
+#### 3.15 Mounting Phase  
+```
+// In App.js
+class App extends Component {
+    // Moving the state and event handlers in parent component to lift the state up.
+    state = {
+        counters: [
+            {id:1, value: 4},
+            {id:2, value: 0},
+            {id:3, value: 0},
+            {id:4, value: 0}
+        ]
+    };
+
+    <!-- 
+    1. 'constructor' method is called only once when an instance of the class is created.
+    2. It can be used to intialize the property in that instance. 
+    -->
+    constructor(){
+        super(); // calling constructor of the parent class
+        console.log("App - Constructor");
+    }
+
+    <!-- 
+    1. 'componentDidMount' method is called after the component is rendered to the DOM.
+    2. It is used to make AJAX calls to get data from the server. 
+    -->
+    componentDidMount(){
+        console.log("App - Mounted");
+    }
+
+    handleIncrement = counter => {...
+    }
+    
+    handleDelete = (counterId) => {...
+    };
+
+    handleReset = () => {...
+    };
+
+    <!-- 
+    1. 'render' method returns a react element that respresents the virtual DOM.
+    2. And then react gets that virtual DOM and renders it in the Real DOM.
+    3. When a component is rendered, all its children components are also rendered recursively.
+    -->
+    render() {
+        console.log("App - Rendered")
+        return (
+            <React.Fragment>
+                <NavBar 
+                    totalCounters={this.state.counters.filter(c => c.value > 0).length}
+                />
+                <main className="container">
+                    <Counters
+                        counters={this.state.counters}
+                        onReset={this.handleReset}
+                        onIncrement={this.handleIncrement}
+                        onDelete={this.handleDelete}
+                    />
+                </main>
+            </React.Fragment>
+        )
+    }
+}
+
+export default App;
+```
+Lifecycle Hooks will be called in the same order.
+Console:
+```
+App - Constructor
+App - Rendered
+    NavBar - Rendered
+    Counters - Rendered
+        Counter - Rendered (x4 counter)
+App - Mounted
+```
+#### 3.16 Updating Phase  
+```
+// In counter.js
+    class Counter extends Components {
+        <!--
+        1. 'componentDidUpdate' method is called after a component is updated.
+        2. As we have a updated state/props, we can compare the updated state/props with the old state/props.
+        3. If there is a change in the state/props of the component, we can make an AJAX request to the server to get the new data.
+         -->
+        componentDidUpdate(prevProps, prevState){
+            // We can make an AJAX call if the value of prevState/prevProps is different from the new value of state/props.
+            if(prevProps.counter.value !== this.props.counter.value){
+                // AJAX call and get new data from the server
+            }
+        }
+        render(){
+            return(
+                <div>
+                    <span className={this.getBadgeClasses()}>{this.formatCount()}</span>
+                    <button onClick={() => this.props.onIncrement(this.props.counter)} className="btn btn-secondary btn-sm">Increment</button>
+                    <button onClick={() => this.props.onDelete(this.props.counter.id)}>Delete</button>
+                </div>
+            )
+        }
+    }
+
+    getBadgeClasses(){...
+    }
+
+    formatCount(){...
+    }
+
+    export deafult Counter;
+```
+#### 3.17 Unmounting Phase  
+```
+// In counter.js
+    class Counter extends Components {
+        componentDidUpdate(prevProps, prevState){
+            if(prevProps.counter.value !== this.props.counter.value){
+                // AJAX call and get new data from the server
+            }
+        }
+
+        <!-- 
+        1. 'componentWillUnmount' method is called just before a component is removed from the DOM.
+        2. It gives us an opportunity to do any kind of clean-ups before the component is removed from the DOM.
+        3. It helps in preventing memory leaks.
+        -->
+        componentWillUnmount(){
+            console.log("Counter - Unmount");
+        }
+
+        render(){
+            return(
+                <div>
+                    <span className={this.getBadgeClasses()}>{this.formatCount()}</span>
+                    <button onClick={() => this.props.onIncrement(this.props.counter)} className="btn btn-secondary btn-sm">Increment</button>
+                    <button onClick={() => this.props.onDelete(this.props.counter.id)}>Delete</button>
+                </div>
+            )
+        }
+    }
+
+    getBadgeClasses(){...
+    }
+
+    formatCount(){...
+    }
+    
+    export deafult Counter;
 ```
