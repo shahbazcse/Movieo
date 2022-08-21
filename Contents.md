@@ -802,30 +802,32 @@ export default Counters;
     export deafult Counter;
 ```
 #### 3.4 Debugging React Apps  
-React Developer Tools Extension for Chrome and Firefox
-Chrome: https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi?hl=en
-Firefox: https://addons.mozilla.org/en-US/firefox/addon/react-devtools/
+React Developer Tools Extension for Chrome and Firefox  
+Chrome: https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi?hl=en  
+Firefox: https://addons.mozilla.org/en-US/firefox/addon/react-devtools/  
 
 #### 3.5 Props vs State  
-##### Props:
-    1.  Props are used to pass data from one component to another.
-    2.  Attributes (i.e. key, value, id) are the part of props, input to the components.
-        ```
-        <Counter key={counter.id} value={counter.value} id={counter.id}>
-        ```
-    3.  When a components does not have any state, it may get the data that it needs via props.
-    4.  Props is read-only, we cannot change the input inside the children component.
-    5.  Props can be used with state and functional components.
+##### Props: 
+1. Props are used to pass data from one component to another.
+2. Attributes (i.e. key, value, id) are the part of props, input to the components.  
+            ```
+            <Counter key={counter.id} value={counter.value} id={counter.id}>
+            ```
+3. When a components does not have any state, it may get the data that it needs via props.
+4. Props is read-only, we cannot change the input inside the children component.
+5. Props can be used with state and functional components.
 ##### State:
-    1.  State is used to pass data within the component only.
-    2.  State is a local storage that is local to the component only and cannot be passed to other components.
-    3.  State can be used only with the state components/class components.
-    4.  State is both read and write.
-    5.  setState method is used to update the state values in the component.
+1. State is used to pass data within the component only.
+2. State is a local storage that is local to the component only and cannot be passed to other components.
+3. State can be used only with the state components/class components.
+4. State is both read and write.
+5. setState method is used to update the state values in the component.
 
 #### 3.6 Raising and Handling Events  
-
-The component that owns a piece of the state, should be the one modifying it.
+***The component that owns a piece of the state, should be the one modifying it.***
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/89023719/185809690-bdad926e-05f7-485c-9c7f-66ff7b531d80.png" height="500px" width="900px">  
+</p>
 
 ```
 // In counters.js
@@ -876,7 +878,7 @@ export default Counters;
         render(){
             return(
                 <div>
-                    <button onClick={this.props.onDelete}>Delete</button> // 'onDelete' event /shahvpassed using props
+                    <button onClick={this.props.onDelete}>Delete</button> // 'onDelete' event passed using props
                 </div>
             )
         }
@@ -941,7 +943,11 @@ export default Counters;
     export deafult Counter;
 ```
 #### 3.8 Single Source of Truth  
-Single source of truth is one master state for most if not all of the application, it send that state down as props to all the child components.
+***Single source of truth is one master state for most if not all of the application, it send that state down as props to all the child components.***  
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/89023719/185809209-4a022bca-e8ff-42f8-a2ff-333575e2d1ad.png" height="500px" width="900px">  
+</p>
+
 ```
 // In counters.js
 import React, { Component } from "react";
@@ -963,7 +969,9 @@ class Counters extends Component {
         this.setState({counters});
     };
 
-    // Reseting Values of Components
+    // Resetting Values of Components
+        // The local state of the counter component will not be updated.
+        // To update the component, we need to remove the local state and have a single source of truth.
     handleReset = () => {
         const counters = this.state.counters.map(c => {
             c.value = 0;
@@ -1011,6 +1019,10 @@ export default Counters;
     export deafult Counter;
 ```
 #### 3.9 Removing the Local State  
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/89023719/185809408-ceb2c223-4043-45d3-ad5c-c84c07a06aca.png" height="500px" width="900px">  
+</p>
+
 ```
 // In counters.js
 import React, { Component } from "react";
@@ -1103,6 +1115,9 @@ export default Counters;
 3. In such situations, where there is no parent-child relationship between two components and we want to keep them in sync and share data between them, we lift the state up to a master component above these two components in question.
 
 4. Hence, both the child components now have a same parent, and we can pass the state to all the child components via props.
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/89023719/185809479-ec39e131-f7f4-4362-9466-8f500d7c7c02.png" height="500px" width="850px">  
+</p>
 
 #### 3.11 Lifting the State Up  
 ```
@@ -1256,23 +1271,25 @@ class Counters extends Component {
 export default Counters;
 ```
 #### 3.14 Lifecycle Hooks  
-A. When writing React components, we need access to lifecycle events to handle a variety of side effects:
-    1. Like fetching data on mount
-    2. Changing props when the component updates
-    3. Cleaning up before the component unmounts, etc.
+***A. When writing React components, we need access to lifecycle events to handle a variety of side effects:***  
+1. Like fetching data on mount.  
+2. Changing props when the component updates.  
+3. Cleaning up before the component unmounts, etc.  
 
-B. Lifecycle Hooks can only be used in class components. It cannot be used in functional components.
+***B. Lifecycle Hooks can only be used in class components. It cannot be used in functional components.***  
 
-C. Each React component has a life cycle, which consists of three phases:
+***C. Each React component has a life cycle, which consists of three phases:***  
+1. Mounting Phase: The mounting phase is when a new component is created and inserted into the DOM or, in other words, when the life of a component begins. This can only happen once, and is often called “initial render”.
+2. Updating Phase: The updating phase is when the component updates or re-renders. This reaction is triggered when the props are updated or when the state is updated. This phase can occur multiple times, which is kind of the point of React.
+3. Unmounting Phase: The last phase within a component's lifecycle is the unmounting phase, when the component is removed from the DOM.  
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/89023719/185810127-3e93c384-4706-4de4-86d6-49c9a566815c.png" height="500px" width="850px">  
+</p>
 
-    1. Mounting Phase: The mounting phase is when a new component is created and inserted into the DOM or, in other words, when the life of a component begins. This can only happen once, and is often called “initial render.”
-    2. Updating Phase: The updating phase is when the component updates or re-renders. This reaction is triggered when the props are updated or when the state is updated. This phase can occur multiple times, which is kind of the point of React.
-    3. Unmounting Phase: The last phase within a component's lifecycle is the unmounting phase, when the component is removed from the DOM.
 #### 3.15 Mounting Phase  
 ```
 // In App.js
 class App extends Component {
-    // Moving the state and event handlers in parent component to lift the state up.
     state = {
         counters: [
             {id:1, value: 4},
@@ -1335,14 +1352,14 @@ class App extends Component {
 
 export default App;
 ```
-Lifecycle Hooks will be called in the same order.
-Console:
+**Console:**  
 ```
+// Lifecycle Hooks will be called in the same order
 App - Constructor
 App - Rendered
     NavBar - Rendered
     Counters - Rendered
-        Counter - Rendered (x4 counter)
+        Counter - Rendered (x4 counter component)
 App - Mounted
 ```
 #### 3.16 Updating Phase  
