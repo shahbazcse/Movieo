@@ -50,6 +50,32 @@
     3.16 Updating Phase  
     3.17 Unmounting Phase  
 
+4. Pagination, Filtering, and Sorting:
+
+    4.1 Pagination - Component Interface  
+    4.2 Pagination - Displaying Pages  
+    4.3 Pagination - Handling Page Changes  
+    4.4 Pagination - Paginating Data  
+    4.5 Pagination - Type Checking with PropTypes  
+    4.6 Filtering - Component Interface  
+    4.7 Filtering - Displaying Items  
+    4.8 Filtering - Default Props  
+    4.9 Filtering - Handling Selection  
+    4.10 Filtering - Implementing Filtering  
+    4.11 Filtering - Adding All Genres  
+    4.12 Sorting - Extracting MoviesTable  
+    4.13 Sorting - Raising the Sort Event  
+    4.14 Sorting - Implementing Sorting  
+    4.15 Sorting - Moving Responsibility  
+    4.16 Sorting - Extracting TableHeader  
+    4.17 Sorting - Extracting TableBody  
+    4.18 Sorting - Rendering Cell Content  
+    4.19 Sorting - Unique Keys  
+    4.20 Sorting - Adding the Sort icons  
+    4.21 Sorting - Extracting Table  
+    4.22 Sorting - Extracting a Method  
+    4.23 Destructuring Arguments  
+
 ## 1. ES6 Refresher
 
 #### 1.1 Let vs Var vs Const
