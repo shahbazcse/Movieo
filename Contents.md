@@ -1464,47 +1464,448 @@ App - Mounted
 
 #### 4.1 Pagination - Component Interface  
 ```
+// In pagination.jsx
+const Pagination = props => {
+    return null;
+};
 
+export default Pagination;
+
+// In movies.jsx
+render(){
+    // Adding interface for the pagination component
+<Pagination
+    itemsCount={count}
+    pageSize={this.state.pageSize}
+    onPageChange={this.handlePageChange}
+/>
+}
 ```
 #### 4.2 Pagination - Displaying Pages  
+1. Used bootstrap for creating pagination: https://getbootstrap.com/docs/4.0/components/pagination/  
+2. Lodash has several built-in utility functions that make coding in JavaScript easier and cleaner. Install lodash from npm.
+3. Math.ceil()  function always rounds up and returns the smaller integer greater than or equal to a given number.  
+4. Lodash `_.range()` method is used to create an array of numbers progressing from the given start value up to, but not including the end value.  
 ```
+// In pagination.jsx
+import _ from "lodash";
 
+const Pagination = props => {
+    // Object destructuring used for props
+    const {itemsCount, pageSize} = props;
+    
+    const pagesCount = Math.ceil(itemsCount / pageSize);
+    if(pagesCount === 1) return null;
+    const pages = _.range(1, pagesCount+1);
+    
+  return (
+    // Displaying Pages
+    <nav>
+      <ul className="pagination">
+        {pages.map(page => 
+            <li 
+                key={page}
+                className="page-item"
+            >
+            <a className="page-link"
+            >
+            {page}
+            </a>
+            </li>
+        )}
+      </ul>
+    </nav>
+  );
+};
 ```
 #### 4.3 Pagination - Handling Page Changes  
 ```
+// In pagination.jsx
 
+const Pagination = props => {
+    const {itemsCount, pageSize} = props;
+    
+    // Handling Page Changes
+    const pagesCount = Math.ceil(itemsCount / pageSize);
+    if(pagesCount === 1) return null;
+    const pages = _.range(1, pagesCount+1);
+    
+  return (
+    <nav>
+      <ul className="pagination">
+        {pages.map(page => 
+            <li 
+                key={page}
+                className={page === currentPage ? "page-item active" : "page-item"}
+            >
+            <a className="page-link"
+                onClick={() => onPageChange(page)}
+            >
+            {page}
+            </a>
+            </li>
+        )}
+      </ul>
+    </nav>
+  );
+};
+export default Pagination;
+
+// In movies.jsx
+
+render(){
+// Object destructuring for 'this.state'
+const {pageSize, currentPage} = this.state;
+<Pagination
+    // Handling Page Changes
+    itemsCount={count}
+    pageSize={pageSize}
+    currentPage={currentPage}
+    onPageChange={this.handlePageChange}
+/>
+}
 ```
 #### 4.4 Pagination - Paginating Data  
 ```
+// In paginate.js
+import _ from "lodash";
 
+// Paginating Data
+export function paginate(items, pageNumber, pageSize) {
+  const startIndex = (pageNumber - 1) * pageSize;
+  return _(items) // this will convert the items to a lodash object
+    .slice(startIndex)
+    .take(pageSize)
+    .value(); // this will convert the lodash object back to a regular array
+}
+
+// In movies.jsx
+import { paginate } from '../utils/paginate';
+
+render() {
+    const { length: count } = this.state.movies;
+    const { pageSize, currentPage, movies: allMovies } = this.state;
+
+    if (count === 0) {
+      return <p>There are no movies in the database.</p>;
+    }
+
+    // Paginating Data
+    const movies = paginate(allMovies, currentPage, pageSize);
+
+    return (
+      <React.Fragment>
+        <div className="row">
+          <div className="col-3">
+            ...
+          </div>
+          <div className="col">
+            <p>Showing {totalCount} movies in the database.</p>
+             {movies.map(movie => {
+                ...
+             )}
+            <Pagination
+              itemsCount={totalCount}
+              pageSize={pageSize}
+              onPageChange={this.handlePageChange}
+              currentPage={currentPage}
+            />
+          </div>
+        </div>
+      </React.Fragment>
+    );
+  }
+}
 ```
 #### 4.5 Pagination - Type Checking with PropTypes  
+1. Install prop-types from npm  
+2. You can use prop-types to document and check the intended types of props passed to components, and warn in development if they don’t match.  
 ```
+// In pagination.jsx
+import PropTypes from 'prop-types';
 
+const Pagination = props => {
+    const {itemsCount, pageSize} = props;
+    ...
+    ...
+};
+
+// Type Checking with PropTypes
+    // isRequired makes sure the prop is passed to the Pagination component
+Pagination.propTypes = {
+    itemsCount: PropTypes.number.isRequired,
+    pageSize: PropTypes.number.isRequired,
+    onPageChange: PropTypes.func.isRequired,
+    currentPage: PropTypes.number.isRequired
+}
+
+export default Pagination;
 ```
 #### 4.6 Filtering - Component Interface  
 ```
+// In movies.jsx
 
+import ListGroup from '';
+import getGenres from '';
+
+class Movies extends Component {
+  state = {
+    movies: [], // it will take sometime to get data, so we use empty array to avoid runtime undefined error
+    genres: [], //
+    currentPage: 1,
+    pageSize: 4
+  };
+
+// componentDidMount will be called when an instance of this method is rendered in the DOM
+  componentDidMount() {
+    this.setState({ movies: getMovies(), genres: getGenres() });
+  }
+...
+...
+  render() {
+    ...
+    ...
+    return (
+      <React.Fragment>
+        <div className="row">
+          <div className="col-3">
+            // Adding Component Interface
+            <ListGroup
+              items={this.state.genres}
+              onItemSelect={this.handleGenreSelect}
+            />
+          </div>
+          <div className="col">
+            ...
+            ...
+          </div>
+        </div>
+      </React.Fragment>
+    );
+  }
+}
+
+export default Movies;
 ```
 #### 4.7 Filtering - Displaying Items  
+Used bootstrap for creating ListGroup: https://react-bootstrap.github.io/components/list-group/  
 ```
-
+const ListGroup = (props) => {
+    { items, textProperty, valueProperty } = props;
+    
+    // Displaying Items
+    return (
+        <ul className="list-group">
+            {items.map(item => (
+              <li
+                key={item[valueProperty]}
+                style={{cursor: "pointer"}}
+                className="list-group-item"
+              >
+                {item[textProperty]}
+              </li>                
+            ))}
+        </ul>
+    );
+};
+ 
+export default ListGroup;
 ```
 #### 4.8 Filtering - Default Props  
 ```
+// In listGroup.jsx
 
+const ListGroup = (props) => {
+    { items, textProperty, valueProperty } = props;
+    
+    // Displaying Items
+    return (
+        <ul className="list-group">
+            {items.map(item => (
+              <li
+                key={item[valueProperty]}
+                style={{cursor: "pointer"}}
+                className="list-group-item"
+              >
+                {item[textProperty]}
+              </li>                
+            ))}
+        </ul>
+    );
+};
+
+// Default Props are used to avoid passing the props the traditional way so that it can be modified as per requirement of the new component with new default value
+
+ListGroup.defaultProps = {
+    textProperty: "name",
+    valueProperty: "_id"       
+};
+ 
+export default ListGroup;
 ```
 #### 4.9 Filtering - Handling Selection  
 ```
+// In listGroup.jsx
 
+const ListGroup = (props) => {
+    { items, textProperty, valueProperty, onItemSelect, selectedItem } = props;
+    return (
+        <ul className="list-group">
+            {items.map(item => (
+              <li
+                onClick={() => onItemSelect(item)} // Handling Selection
+                key={item[valueProperty]}
+                style={{cursor: "pointer"}}
+                className={item === selectedItem ? "list-group-item  active" : "list-group-item"} // Setting class dynamically when rendering the list
+              >
+                {item[textProperty]}
+              </li>                
+            ))}
+        </ul>
+    );
+}
+
+ListGroup.defaultProps = {
+    textProperty: "name",
+    valueProperty: "_id"       
+};
+ 
+export default ListGroup;
+
+// In movies.jsx
+
+class Movies extends Component {
+...
+...
+  render() {
+    ...
+    ...
+    return (
+      <React.Fragment>
+        <div className="row">
+          <div className="col-3">
+            <ListGroup
+              items={this.state.genres}
+              selectedItem={this.state.selectedGenre} // Handling Selection
+              onItemSelect={this.handleGenreSelect} // Handling Selection
+            />
+          </div>
+          <div className="col">
+            ...
+            ...
+          </div>
+        </div>
+      </React.Fragment>
+    );
+  }
+}
+
+export default Movies;
 ```
 #### 4.10 Filtering - Implementing Filtering  
 ```
+// In movies.jsx
 
+class Movies extends Component {
+...
+...
+  render() {
+    const { length: count } = this.state.movies;
+    const {
+        pageSize,
+        currentPage,
+        selectedGenre,
+        movies: allMovies
+    } = this.states;
+    
+    if(count === 0) return <p>There are no movies in the database.</p>;
+    
+    // Implementing Filtering
+    const filtered = selectedGenre 
+    ? allMovies.filter(m => m.genre._id === selectedGenre._id) 
+    : allMovies;
+    
+    const movies = paginate(filtered, currentPage, pageSize);
+    
+    return (
+      <React.Fragment>
+        <div className="row">
+          <div className="col-3">
+            // Adding Component Interface
+            <ListGroup
+              items={this.state.genres}
+              onItemSelect={this.handleGenreSelect}
+            />
+          </div>
+          <p>Showing {filtered.length} movies in the database.</p>
+          <div className="col">
+            <Pagination
+                itemsCount={filtered.length} // Implementing Filtering
+                pageSize={pageSize}
+                currentPage={currentPage}
+                onPageChange={this.handlePageChange}
+            />
+          </div>
+        </div>
+      </React.Fragment>
+    );
+  }
+}
+
+export default Movies;
 ```
 #### 4.11 Filtering - Adding All Genres  
 ```
+// In movies.jsx
 
+import ListGroup from '';
+import getGenres from '';
+
+class Movies extends Component {
+  state = {
+    movies: [], // it will take sometime to get data, so we use empty array to avoid runtime undefined error
+    genres: [], //
+    currentPage: 1,
+    pageSize: 4
+  };
+
+// componentDidMount will be called when an instance of this method is rendered in the DOM
+  componentDidMount() {
+    // In a new array 'genres', Adding 'All Genres' as an object in the beginning and then adding rest of the genres using spread operator
+  const genres = [{ name: "All Genres"}, ...getGenres()];
+    this.setState({ movies: getMovies(), genres }); // when key: value (genres: genres) are same, we declare only one to avoid repetitions
+  }
+...
+handleGenreSelect = genre => {
+    this.setState({ selectedGenre: genre, currentPage: 1 }); // We should refresh the current page to 1 after every setState to avoid genre data overwrite on each other
+}
+  render() {
+  
+    // Implementing Filtering by checking both 'selectedGenre' and 'selectedGenre._id' to avoid blank 'All Genres' page
+    const filtered = selectedGenre && selectedGenre._id
+    ? allMovies.filter(m => m.genre._id === selectedGenre._id) 
+    : allMovies;
+    ...
+    return (
+      <React.Fragment>
+        <div className="row">
+          <div className="col-3">
+            <ListGroup
+              items={this.state.genres}
+              onItemSelect={this.handleGenreSelect}
+            />
+          </div>
+          <div className="col">
+            ...
+            ...
+          </div>
+        </div>
+      </React.Fragment>
+    );
+  }
+}
+
+export default Movies;
 ```
 #### 4.12 Sorting - Extracting MoviesTable  
 ```
