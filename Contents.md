@@ -1908,50 +1908,707 @@ handleGenreSelect = genre => {
 export default Movies;
 ```
 #### 4.12 Sorting - Extracting MoviesTable  
+Table will be extracted from 'movies.jsx' and will be created as a separate file 'moviesTable.jsx'. Then 'moviesTable.jsx' will be imported inside the 'movies.jsx'.
 ```
+// In moviesTable.jsx
+import Like from ""; // Like component will be imported before we use it in the table body
 
+const MoviesTable = props => {
+    const { movies, onDelete, onLike } = props; // 'onDelete' and 'onLike' raise events will be used for onClick events in table body
+    
+    return(
+        <table>
+            <tr>
+                ...
+                ...
+            </tr>
+            <tbody>
+                {movies.map((movie) => {
+                    ...
+                    ...
+                })}
+                <Like
+                    liked={movie.liked}
+                    onClick{() => onLike(movie)}
+                />
+                <button
+                    onClick{() => onDelete(movie)}
+                    className="btn btn-danger btn-sm"
+                >
+                    Delete
+                </button>
+            </tbody>
+        </table>
+    )
+}
+
+// In movies.jsx
+import MoviesTable from "";
+
+render() {
+    ...
+    ...
+    return (
+      <React.Fragment>
+        <div className="row">
+          <div className="col-3">
+            <ListGroup
+              items={this.state.genres}
+              onItemSelect={this.handleGenreSelect}
+            />
+          </div>
+          <div className="col">
+            // Here we have raised events props invoking event handlers
+            <MoviesTable
+                movies={movies}
+                onLike={this.handleLike}
+                onDelete={this.handleDelete}
+            />
+            ...
+          </div>
+        </div>
+      </React.Fragment>
+    );
+  }
+}
 ```
 #### 4.13 Sorting - Raising the Sort Event  
 ```
+// In moviesTable.jsx
+import Like from "";
 
+const MoviesTable = props => {
+    const { movies, onDelete, onLike, onSort } = props;
+    
+    return(
+        <table>
+            <tr>
+                // Raising the Sort Event
+                <th onClick={() => onSort('title')}>Title</th>
+                <th onClick={() => onSort('genre.name')}>Genre</th>
+                <th onClick={() => onSort('numberInStock')}>Stock</th>
+                <th onClick={() => onSort('dailyRentalRate')}>Rate</th>
+                ...
+            </tr>
+            <tbody>
+                {movies.map((movie) => {
+                    ...
+                    ...
+                })}
+                <Like
+                    liked={movie.liked}
+                    onClick{() => onLike(movie)}
+                />
+                <button
+                    onClick{() => onDelete(movie)}
+                    className="btn btn-danger btn-sm"
+                >
+                    Delete
+                </button>
+            </tbody>
+        </table>
+    )
+}
+
+// In movies.jsx
+import MoviesTable from "";
+
+render() {
+    ...
+    ...
+    return (
+      <React.Fragment>
+        <div className="row">
+          <div className="col-3">
+            <ListGroup
+              items={this.state.genres}
+              onItemSelect={this.handleGenreSelect}
+            />
+          </div>
+          <div className="col">
+            <MoviesTable
+                movies={movies}
+                onLike={this.handleLike}
+                onDelete={this.handleDelete}
+                onSort={this.handleSort} // onSort props will raise event handler
+            />
+            ...
+          </div>
+        </div>
+      </React.Fragment>
+    );
+  }
+}
 ```
 #### 4.14 Sorting - Implementing Sorting  
 ```
+// In movies.jsx
 
+import MoviesTable from "";
+
+  // Implementing Sorting
+  handleSort = (path) => {
+    const sortColumn = {...this.state.sortColumn};
+    if(sortColumn.path == path)
+        sortColumn.order = (sortColumn.order === 'asc') ? 'desc': 'asc';
+    else{
+        sortColumn.path = path;
+        sortColumn.order = 'asc';
+    }
+    this.setState({ sortColumn });
+  };
+
+render() {
+    ...
+    ...
+    // _.orderBy() method is used for sorting by specifying the sort orders, i.e. asc or desc.
+    const sorted = _.orderBy(filtered, [sortColumn.path], [sortColumn.order]);
+    
+    const movies = paginate(sorted, currentPage, pageSize);
+    return (
+      <React.Fragment>
+        <div className="row">
+          <div className="col-3">
+            <ListGroup
+              items={this.state.genres}
+              onItemSelect={this.handleGenreSelect}
+            />
+          </div>
+          <div className="col">
+            <MoviesTable
+                movies={movies}
+                onLike={this.handleLike}
+                onDelete={this.handleDelete}
+                onSort={this.handleSort}
+            />
+            ...
+          </div>
+        </div>
+      </React.Fragment>
+    );
+  }
+}
 ```
 #### 4.15 Sorting - Moving Responsibility  
+We will move the sorting logic to the MoviesTable component from the movies.jsx for reusability of the MoviesTable component with the sorting logic.
 ```
+// In moviesTable.jsx
 
+import Like from "";
+
+class MoviesTable extends Component {
+    // Sorting logic moved from movies.jsx to this component under raiseSort event
+    raiseSort = (path) => {
+    const sortColumn = { ...this.props.sortColumn };
+    if (sortColumn.path === path) {
+      sortColumn.order = sortColumn.order === "asc" ? "desc" : "asc";
+    } else {
+      sortColumn.path = path;
+      sortColumn.order = "asc";
+    }
+    this.props.onSort(sortColumn);
+  };
+
+    render(){
+    const { movies, onDelete, onLike, onSort } = props;
+    
+    return(
+        <table>
+            <tr>
+                // Invoking raiseSort event
+                <th onClick={() => this.raiseSort('title')}>Title</th>
+                <th onClick={() => this.raiseSort('genre.name')}>Genre</th>
+                <th onClick={() => this.raiseSort('numberInStock')}>Stock</th>
+                <th onClick={() => this.raiseSort('dailyRentalRate')}>Rate</th>
+                ...
+            </tr>
+            <tbody>
+                {movies.map((movie) => {
+                    ...
+                    ...
+                })}
+                <Like
+                    liked={movie.liked}
+                    onClick{() => onLike(movie)}
+                />
+                <button
+                    onClick{() => onDelete(movie)}
+                    className="btn btn-danger btn-sm"
+                >
+                    Delete
+                </button>
+            </tbody>
+        </table>
+    )
+    }
+}
+
+// In movies.jsx
+
+import MoviesTable from "";
+
+  // hanldeSort will now take 'sortColumn' object from the MoviesTable onclick() event
+  handleSort = (sortColumn) => {
+    this.setState({ sortColumn });
+  };
+
+render() {
+    ...
+    ...
+    const sorted = _.orderBy(filtered, [sortColumn.path], [sortColumn.order]);
+    
+    const movies = paginate(sorted, currentPage, pageSize);
+    return (
+      <React.Fragment>
+        <div className="row">
+          <div className="col-3">
+            <ListGroup
+              items={this.state.genres}
+              onItemSelect={this.handleGenreSelect}
+            />
+          </div>
+          <div className="col">
+            <MoviesTable
+                movies={movies}
+                sortColumn={sortColumn} // sortColumn props added
+                onLike={this.handleLike}
+                onDelete={this.handleDelete}
+                onSort={this.handleSort}
+            />
+            ...
+          </div>
+        </div>
+      </React.Fragment>
+    );
+  }
+}
 ```
 #### 4.16 Sorting - Extracting TableHeader  
+We will extract the table header from movies.jsx and move it to a new tableHeader.jsx component to improve reusability in future if we make a different table, i.e. Customer record, Product list, etc
 ```
+// In tableHeader.jsx
 
+import React, { Component } from "react";
+
+class TableHeader extends Component {
+  // Sorting logic moves to the table header for reusability in future in case we make a new table
+  raiseSort = (path) => {
+    const sortColumn = { ...this.props.sortColumn };
+    if (sortColumn.path === path) {
+      sortColumn.order = sortColumn.order === "asc" ? "desc" : "asc";
+    } else {
+      sortColumn.path = path;
+      sortColumn.order = "asc";
+    }
+    this.props.onSort(sortColumn);
+  };
+
+  render() {
+    return (
+      <thead>
+        <tr>
+          // Rendering the elements dynamically using
+          {this.props.columns.map((column) => (
+            <th
+                className="clickable"
+              key={column.path || column.key}
+              onClick={() => this.raiseSort(column.path)}
+            >
+              {column.label} {this.renderSortIcon(column)}
+            </th>
+          ))}
+        </tr>
+      </thead>
+    );
+  }
+}
+
+export default TableHeader;
+
+// In moviesTable.jsx
+
+import Like from "";
+import TableHeader from "";
+
+class MoviesTable extends Component {
+    
+    columns = [
+    { path: 'title', label: 'Title' },
+    { path: 'genre.name', label: 'Genre' },
+    { path: 'numberInStock', label: 'Stock' },
+    { path: 'dailyRentalRate', label: 'Rate' },
+    { key: "like" }, // For rendering we use empty object except a key for Like button as it won't need sorting
+    { key: "delete" } // For rendering we use empty object a key for Delete button as it won't need sorting
+  ];
+
+    render(){
+    const { movies, onDelete, onLike, onSort, sortColumn } = props;
+    
+    return(
+        <table>
+            <TableHeader
+                    // Adding props
+                columns={this.columns}
+                sortColumn={sortColumn}
+                onSort={onSort}
+            />
+            <tbody>
+                {movies.map((movie) => {
+                    ...
+                    ...
+                })}
+                <Like
+                    liked={movie.liked}
+                    onClick{() => onLike(movie)}
+                />
+                <button
+                    onClick{() => onDelete(movie)}
+                    className="btn btn-danger btn-sm"
+                >
+                    Delete
+                </button>
+            </tbody>
+        </table>
+    )
+    }
+}
 ```
 #### 4.17 Sorting - Extracting TableBody  
+We will extract the table body from movies.jsx and move it to a new tableBody.jsx component to improve abstraction.
 ```
+// In tableBody.jsx
 
+class TableBody extends Component {
+
+    render() {
+
+        const {data, columns} = this.props;
+
+        return (
+            <tbody>
+                // Rendering the elements dynamically based on number of items in data
+                {data.map((item) => (
+                    <tr key={item._id}>
+                        {columns.map((column) => <td></td>)}
+                    </tr>
+                ))}
+            </tbody>
+        );
+    }
+}
+ 
+export default TableBody; 
+
+// In moviesTable.jsx
+
+import TableBody from "";
+
+class MoviesTable extends Component {
+    ...
+    ...
+    render(){
+    const { movies, onDelete, onLike, onSort, sortColumn } = props;
+    
+    return(
+        <table>
+            <TableHeader
+                    // Adding props
+                columns={this.columns}
+                sortColumn={sortColumn}
+                onSort={onSort}
+            />
+            // Adding TableBody component interface and passing movies as 'data' props
+            <TableBody
+                column={this.columns} // Adding column props
+                data={movies}
+            />
+        </table>
+    )
+    }
+}
 ```
 #### 4.18 Sorting - Rendering Cell Content  
+Lodash `_.get()` method is used to get the value at path of object.  
 ```
+// In tableBody.jsx
+import _ from 'lodash';
 
+class TableBody extends Component {
+    // Rendering Cell Content
+    renderCell = (item, column) => {
+        if (column.content) return column.content(item);
+        return _.get(item, column.path);
+    };
+
+    render() {
+
+        const {data, columns} = this.props;
+
+        return (
+            <tbody>
+                {data.map((item) => (
+                    <tr key={item._id}>
+                        {columns.map((column) => (<td>{this.renderCell(item, column)}</td>))}
+                    </tr>
+                ))}
+            </tbody>
+        );
+    }
+}
+
+// In moviesTable.jsx
+
+import TableBody from "";
+
+class MoviesTable extends Component {
+    columns = [
+    { path: 'title', label: 'Title' },
+    { path: 'genre.name', label: 'Genre' },
+    { path: 'numberInStock', label: 'Stock' },
+    { path: 'dailyRentalRate', label: 'Rate' },
+    { key: 'like',
+      content: movie => <Like liked={movie.liked} onClick={() => this.props.onLike(movie)}/>   
+    }, // 'content' is a function that returns a JSX expression <Like> for each 'movie' parameter
+    { key: 'delete',
+      content: movie => <button onClick={() => this.props.onDelete(movie)} className="btn btn-danger btn-sm">Delete</button> 
+    } // 'content' is a function that returns a JSX expression <button> for each 'movie' parameter
+  ];
+  
+    render(){
+    const { movies, onDelete, onLike, onSort, sortColumn } = props;
+    
+    return(
+        <table>
+            <TableHeader
+                    // Adding props
+                columns={this.columns}
+                sortColumn={sortColumn}
+                onSort={onSort}
+            />
+            <TableBody
+                columns={this.columns} 
+                data={movies}
+            />
+        </table>
+    )
+    }
+}
 ```
 #### 4.19 Sorting - Unique Keys  
 ```
+class TableBody extends Component {
 
+    renderCell = (item, column) => {
+        if (column.content) return column.content(item);
+        return _.get(item, column.path);
+    };
+    // Creating unique keys for distinct items in each column
+    createKey = (item, column) => {
+        return item._id + (column.path || column.key);
+    }
+
+    render() {
+
+        const {data, columns} = this.props;
+
+        return (
+            <tbody>
+                {data.map((item) => (
+                    <tr key={item._id}>
+                        {columns.map((column) => (<td key={this.createKey(item, column)}>{this.renderCell(item, column)}</td>))}
+                    </tr>
+                ))}
+            </tbody>
+        );
+    }
+}
+ 
+export default TableBody;
 ```
 #### 4.20 Sorting - Adding the Sort icons  
+Used font awesome sort icon: https://fontawesome.com/icons/sort-up?s=solid&f=classic  
 ```
+// In tableHeader.jsx
 
+import React, { Component } from "react";
+
+class TableHeader extends Component {
+  ...
+  ...
+  // Adding the Sort icons
+  renderSortIcon = (column) => {
+    const {sortColumn} = this.props;
+    if(column.path !== sortColumn.path) return null;
+    if(sortColumn.order === 'asc') return <i className="fa fa-sort-asc"></i>;
+    return <i className="fa fa-sort-desc"></i>;
+  }
+
+  render() {
+    return (
+      <thead>
+        <tr>
+          {this.props.columns.map((column) => (
+            <th
+                className="clickable" // added 'clickable' class for pointer cursor in index.css
+              key={column.path || column.key}
+              onClick={() => this.raiseSort(column.path)}
+            >
+              {column.label} {this.renderSortIcon(column)} // Rendering sort icon in table header
+            </th>
+          ))}
+        </tr>
+      </thead>
+    );
+  }
+}
+
+export default TableHeader;
 ```
 #### 4.21 Sorting - Extracting Table  
+We will extract the 'table' from moviesTable.jsx and move it into a separate 'table.jsx' component for reusability in future if we want to make table of items
 ```
+// In table.jsx
 
+import React from "react";
+import TableHeader from "./tableHeader";
+import TableBody from "./tableBody";
+
+// Extracted Table here
+const Table = (props) => {
+  {columns, sortColumn, onSort, data} = props;
+  return (
+    <table className="table">
+      <TableHeader
+        columns={columns}
+        sortColumn={sortColumn}
+        onSort={onSort}
+      />
+      <TableBody data={data} columns={columns} />
+    </table>
+  );
+};
+
+export default Table;
+
+// In moviesTable.jsx
+
+import React, {Component} from 'react';
+import Like from "./common/like";
+import Table from './common/table';
+
+class MoviesTable extends Component {
+  ...
+  ...
+  render() {
+    const {movies, onSort, sortColumn} = this.props;
+    return ( 
+            // Adding Table component interface
+            <Table
+              columns={this.columns}
+              data={movies}
+              sortColumn={sortColumn}
+              onSort={onSort}
+            />
+     );
+  }
+}
+ 
+export default MoviesTable;
 ```
 #### 4.22 Sorting - Extracting a Method  
 ```
+// In movies.jsx
 
+class Movies extends Component {
+  ...
+  ...
+  // Extracted the filter logic from render() and moved it to a new method 'getPageData'
+  getPageData = () => {
+    const {
+      pageSize,
+      currentPage,
+      sortColumn,
+      movies: allMovies,
+      selectedGenre,
+    } = this.state;
+
+    const filtered =
+      selectedGenre && selectedGenre._id
+        ? allMovies.filter((m) => m.genre._id === selectedGenre._id)
+        : allMovies;
+
+    const sorted = _.orderBy(filtered, [sortColumn.path], [sortColumn.order]);
+
+    const movies = paginate(sorted, currentPage, pageSize);
+
+    return { totalCount: filtered.length, data: movies }; // 'totalCount' will return the length of the filtered items
+  };
+
+  render() {
+    const { length: count } = this.state.movies;
+    const { pageSize, currentPage, sortColumn } = this.state;
+
+    if (count === 0) {
+      return <p>There are no movies in the database.</p>;
+    }
+
+    const { totalCount, data: movies } = this.getPageData();
+
+    return (
+      <React.Fragment>
+        <div className="row">
+          <div className="col-3">
+            <ListGroup
+              items={this.state.genres}
+              onItemSelect={this.handleGenreSelect}
+              selectedItem={this.state.selectedGenre}
+            />
+          </div>
+          <div className="col">
+            <p>Showing {totalCount} movies in the database.</p>
+            <MoviesTable
+              sortColumn={sortColumn}
+              movies={movies}
+              onDelete={this.handleDelete}
+              onLike={this.handleLike}
+              onSort={this.handleSort}
+            />
+            <Pagination
+              itemsCount={totalCount}
+              pageSize={pageSize}
+              onPageChange={this.handlePageChange}
+              currentPage={currentPage}
+            />
+          </div>
+        </div>
+      </React.Fragment>
+    );
+  }
+}
+
+export default Movies;
 ```
 #### 4.23 Destructuring Arguments  
 ```
+// In table.jsx
 
+import React from "react";
+import TableHeader from "./tableHeader";
+import TableBody from "./tableBody";
+
+// props will be replaced with the destructured arguments to make the code cleaner
+const Table = ({columns, sortColumn, onSort, data}) => {
+  return (
+    <table className="table">
+      <TableHeader
+        columns={columns}
+        sortColumn={sortColumn}
+        onSort={onSort}
+      />
+      <TableBody data={data} columns={columns} />
+    </table>
+  );
+};
+
+export default Table;
 ```
