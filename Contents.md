@@ -2631,69 +2631,176 @@ const Table = ({columns, sortColumn, onSort, data}) => {
 
 export default Table;
 ```
-## Routing:
+## 5. Routing:
 
-#### 5.1 Setup  
+#### 5.1 Adding React Router  
+Install `react-router-dom`
 ```
+// In index.js
+import { BrowserRouter } from "react-router-dom";
 
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(
+    // Wrapping <App/> with <BrowserRouter> to add routing to our App
+  <BrowserRouter>
+    <App />
+  </BrowserRouter>
+);
 ```
-#### 5.2 Adding Routing  
+#### 5.2 Adding Routes  
+1. **Redirect**: In React Router v4/5, <Redirect> tells the router when to automatically redirect from one path to another path by using `from` and `to` props.  
+2. **Route**: Route is the conditionally shown component that renders some UI when its path matches the current URL.  
+    Route props:  
+    a. **path**: Path specifies a pathname we assign to our component  
+    b. **component**: It refers to the component which will render on matching the path  
+    c. **exact**: It is used to match the exact value with the URL  
+3. **Switch**: It renders a route exclusively and when the exact match is found, it will ignore all other route and renders the UI.  
 ```
+// In App.js
+import { Redirect, Route, Switch } from "react-router-dom";
+import Movies from "./components/movies";
+import Customers from './components/customers';
+import Rentals from './components/rentals';
+import NotFound from "./components/notFound";
 
+class App extends Component {
+  render() {
+    return (
+      <React.Fragment>
+        <main className="container">
+          <Switch>
+              // Adding route
+            <Route path="/movies" component={Movies} />
+            <Route path="/customers" component={Customers} />
+            <Route path="/rentals" component={Rentals} />
+            <Route path="/not-found" component={NotFound} />
+            <Redirect from="/" exact to="/movies" />
+            <Redirect to="/not-found" />
+          </Switch>
+        </main>
+      </React.Fragment>
+    );
+  }
+}
 ```
-#### 5.3 Switch  
+#### 5.3 Adding the NavBar  
+1. **Link**: It is used to create links to different routes using `to` props and implement navigation around the application. It works like HTML <a> tag.  
+2. **NavLink**: It works just like <Link> with a property to make the link active.
 ```
+// In navBar.jsx
+import { NavLink, Link } from "react-router-dom";
 
-```
-#### 5.4 Link  
-```
+class NavBar extends Component {
+  render() {
+    return (
+      <nav className="navbar navbar-light bg-light">
+        <div className="navbar">
+          <Link className="navbar-brand" to="/">
+            Vidly
+          </Link>
+          <NavLink className="nav-item nav-link" to="/movies">
+            Movies
+          </NavLink>
+          <NavLink className="nav-item nav-link" to="/customers">
+            Customers
+          </NavLink>
+          <NavLink className="nav-item nav-link" to="/rentals">
+            Rentals
+          </NavLink>
+        </div>
+      </nav>
+    );
+  }
+}
 
+// In App.js
+import NavBar from "./components/navBar";
+    
+class App extends Component {
+  render() {
+    return (
+      <React.Fragment>
+        <NavBar/> // Adding the NavBar
+        <main className="container">
+          <Switch>
+            <Route path="/movies/:id" component={MovieForm} />
+            <Route path="/movies" component={Movies} />
+            <Route path="/customers" component={Customers} />
+            <Route path="/rentals" component={Rentals} />
+            <Route path="/not-found" component={NotFound} />
+            <Redirect from="/" exact to="/movies" />
+            <Redirect to="/not-found" />
+          </Switch>
+        </main>
+      </React.Fragment>
+    );
+  }
+}
 ```
-#### 5.5 Route Props  
+#### 5.4 Linking to the MovieForm  
+1. match: https://v5.reactrouter.com/web/api/match  
+2. history: https://v5.reactrouter.com/web/api/history  
 ```
+// In moviesTable.jsx
+import { Link } from "react-router-dom";
+    
+class MoviesTable extends Component {
+    // To make clickable Titles in movie table, we need to add a content property to render a Link component
+  columns = [
+    {
+      path: "title",
+      label: "Title",
+      content: (movie) => (
+        <Link to={`/movies/${movie._id}`}>{movie.title}</Link>
+      ),
+    },
+    ...
+    ...
+  ];
 
-```
-#### 5.6 Passing Props  
-```
+  render() {
+    ...
+    ...
+  }
+};
+    
+// In movieForm.jsx
 
-```
-#### 5.7 Route Parameters  
-```
-
-```
-#### 5.8 Optional Parameters  
-```
-
-```
-#### 5.9 Query String Parameters  
-```
-
-```
-#### 5.10 Redirects  
-```
-
-```
-#### 5.11 Programmatic Navigation  
-```
-
-```
-#### 5.12 Nested Routing  
-```
-
-```
-#### 5.13 Adding React Router  
-```
-
-```
-#### 5.14 Adding Routes  
-```
-
-```
-#### 5.15 Adding the NavBar  
-```
-
-```
-#### 5.16 Linking to the MovieForm  
-```
-
+const MovieForm = ({ match, history }) => {
+  return (
+    <div>
+      <h1>Movie Form {match.params.id}</h1>
+      <button
+        onClick={() => history.push("/movies")}
+        className="btn btn-success"
+      >
+        Save
+      </button>
+    </div>
+  );
+};
+    
+// In App.js
+import MovieForm from "./components/movieForm";
+    
+class App extends Component {
+  render() {
+    return (
+      <React.Fragment>
+        <NavBar/>
+        <main className="container">
+          <Switch>
+            <Route path="/movies/:id" component={MovieForm} /> // Linking to the MovieForm for each unique movie id
+            <Route path="/movies" component={Movies} />
+            <Route path="/customers" component={Customers} />
+            <Route path="/rentals" component={Rentals} />
+            <Route path="/not-found" component={NotFound} />
+            <Redirect from="/" exact to="/movies" />
+            <Redirect to="/not-found" />
+          </Switch>
+        </main>
+      </React.Fragment>
+    );
+  }
+}
 ```
