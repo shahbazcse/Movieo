@@ -78,22 +78,17 @@
 
 5. Routing:
 
-    5.1 Setup  
-    5.2 Adding Routing  
-    5.3 Switch  
-    5.4 Link  
-    5.5 Route Props  
-    5.6 Passing Props  
-    5.7 Route Parameters  
-    5.8 Optional Parameters  
-    5.9 Query String Parameters  
-    5.10 Redirects  
-    5.11 Programmatic Navigation  
-    5.12 Nested Routing  
-    5.13 Adding React Router  
-    5.14 Adding Routes  
-    5.15 Adding the NavBar  
-    5.16 Linking to the MovieForm  
+    5.1 Adding React Router  
+    5.2 Adding Routes  
+    5.3 Adding the NavBar  
+    5.4 Linking to the MovieForm  
+
+6. Forms:
+
+    6.1
+    6.2
+    6.3
+    6.4
 
 ## 1. ES6 Refresher
 
