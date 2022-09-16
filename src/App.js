@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Redirect, Route, Switch } from "react-router-dom";
 import "./App.css";
-import NavBar from "./components/navbar";
+import NavBar from "./components/navBar";
 import Movies from "./components/movies";
 import Customers from './components/customers';
 import Rentals from './components/rentals';

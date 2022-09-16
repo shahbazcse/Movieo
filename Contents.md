@@ -2738,8 +2738,8 @@ class App extends Component {
 }
 ```
 #### 5.4 Linking to the MovieForm  
-1. match: https://v5.reactrouter.com/web/api/match  
-2. history: https://v5.reactrouter.com/web/api/history  
+1. **match**: https://v5.reactrouter.com/web/api/match  
+2. **history**: https://v5.reactrouter.com/web/api/history  
 ```
 // In moviesTable.jsx
 import { Link } from "react-router-dom";
