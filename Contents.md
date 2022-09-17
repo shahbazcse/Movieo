@@ -2691,7 +2691,7 @@ class NavBar extends Component {
       <nav className="navbar navbar-light bg-light">
         <div className="navbar">
           <Link className="navbar-brand" to="/">
-            Vidly
+            Movieo
           </Link>
           <NavLink className="nav-item nav-link" to="/movies">
             Movies
