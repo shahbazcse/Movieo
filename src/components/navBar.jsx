@@ -14,7 +14,7 @@ class NavBar extends Component {
             />
             Movieo
           </Link>
-          <div class="vl"></div>
+          <div className="vl"></div>
           <NavLink className="nav-item nav-link" to="/movies">
             Movies
           </NavLink>
@@ -26,6 +26,9 @@ class NavBar extends Component {
           </NavLink>
           <NavLink className="nav-item nav-link" to="/login">
             Login
+          </NavLink>
+          <NavLink className="nav-item nav-link" to="/register">
+            Register
           </NavLink>
         </div>
       </nav>
