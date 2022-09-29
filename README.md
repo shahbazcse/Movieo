@@ -85,24 +85,24 @@
 
 6. Forms:
 
-    6.1 Introduction
-    6.2 Building a Bootstrap Form
-    6.3 Handling Form Submission
-    6.4 Refs
-    6.5 Controlled Elements
-    6.6 Handling Multiple Inputs
-    6.7 Common Errors
-    6.8 Extracting a Reusable Input
-    6.9 Validation
-    6.10 Basic Validation Implementation
-    6.11 Displaying Validation Errors
-    6.12 Validation on Change
-    6.13 Exploring Joi
-    6.14 Validating a Form using Joi
-    6.15 Validating a Field using Joi
-    6.16 Disabling the Submit Button
-    6.17 Extracting a Reusable Form
-    6.18 Extracting Helper Rendering Methods
+    6.1 Introduction  
+    6.2 Building a Bootstrap Form  
+    6.3 Handling Form Submission  
+    6.4 Refs  
+    6.5 Controlled Elements  
+    6.6 Handling Multiple Inputs  
+    6.7 Common Errors  
+    6.8 Extracting a Reusable Input  
+    6.9 Validation  
+    6.10 Basic Validation Implementation  
+    6.11 Displaying Validation Errors  
+    6.12 Validation on Change  
+    6.13 Exploring Joi  
+    6.14 Validating a Form using Joi  
+    6.15 Validating a Field using Joi  
+    6.16 Disabling the Submit Button  
+    6.17 Extracting a Reusable Form  
+    6.18 Extracting Helper Rendering Methods  
 
 ## 1. ES6 Refresher
 
