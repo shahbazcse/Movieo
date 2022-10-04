@@ -2865,8 +2865,9 @@ handleSubmit = e => {
 }
 ```
 #### 6.4 Refs
-Refs - Refs are a function provided by React to access the DOM element and the React element that you might have created on your own.
+Refs: Refs are a function provided by React to access the DOM element and the React element that you might have created on your own.
 ```
+// In loginForm.js
 class LoginForm extends Form {
 handleSubmit = e => {
     e.preventDefault();
