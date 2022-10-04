@@ -2816,20 +2816,81 @@ class App extends Component {
 ## 6. Forms:
 
 #### 6.1 Introduction
-```
+Form is built using Bootstrap form template: https://getbootstrap.com/docs/4.3/components/forms/  
+For each login form, we have to add a Route in App.js and NavLink in the navBar.jsx
 
-```
 #### 6.2 Building a Bootstrap Form
 ```
-
+// In loginForm.js
+class LoginForm extends Form {
+  render() {
+    return (
+      <div>
+        <h1>Login</h1>
+        <form> // using Bootstrap Form
+          <div>
+            <label htmlFor="username">Username</label>
+            <input id="username" type="text" className="form-control" />
+          </div>
+          <div>
+            <label htmlFor="password">Password</label>
+            <input id="password" type="text" className="form-control" />
+          </div>
+          <button className="btn btn-primary">Login</button>
+        </form>
+      </div>
+    );
+  }
+}
 ```
 #### 6.3 Handling Form Submission
+To avoid the full page reload while submitting, we use preventDefault().
 ```
-
+// In loginForm.js
+class LoginForm extends Form {
+handleSubmit = e => {
+    e.preventDefault(); // To avoid the full page reload on submitting form
+}
+  render() {
+    return (
+      <div>
+        <h1>Login</h1>
+        <form onSubmit={this.handleSubmit}>
+          ...
+          ...
+        </form>
+      </div>
+    );
+  }
+}
 ```
 #### 6.4 Refs
+Refs - Refs are a function provided by React to access the DOM element and the React element that you might have created on your own.
 ```
-
+class LoginForm extends Form {
+handleSubmit = e => {
+    e.preventDefault();
+    const username = this.username.current.value;
+}
+  render() {
+    return (
+      <div>
+        <h1>Login</h1>
+        <form>
+          <div>
+            <label htmlFor="username">Username</label>
+            <input autoFocus ref={this.username} id="username" type="text" className="form-control" /> // Ref is used access the DOM element
+          </div>
+          <div>
+            <label htmlFor="password">Password</label>
+            <input id="password" type="text" className="form-control" />
+          </div>
+          <button className="btn btn-primary">Login</button>
+        </form>
+      </div>
+    );
+  }
+}
 ```
 #### 6.5 Controlled Elements
 ```
