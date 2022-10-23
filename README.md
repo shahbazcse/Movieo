@@ -2877,8 +2877,8 @@ handleSubmit = e => {
     return (
       <div>
         <h1>Login</h1>
-        <form>
-          <div>
+        <form onSubmit={this.handleSubmit}>
+          <div className="form-group">
             <label htmlFor="username">Username</label>
             <input autoFocus ref={this.username} id="username" type="text" className="form-control" /> // Ref is used access the DOM element
           </div>
@@ -2894,16 +2894,127 @@ handleSubmit = e => {
 }
 ```
 #### 6.5 Controlled Elements
+Controlled Elements: In React, Controlled Elements are those in which form’s data is handled by the elements’s state. It takes its current value through props and makes changes through callbacks like onClick,onChange, etc. A parent component manages its own state and passes the new values as props to the controlled elements.
 ```
+// In loginForm.js
+class LoginForm extends Form {
+// Elements's state handles form's data of the Controlled Element, hence it is the 'single source of truth' for the input elements.
+state = {
+    account: {
+        username: '',
+        password: ''
+    }
+}
 
+handleChange = e => {
+    const account = {...this.state.account};
+    account.username = e.currentTarget.value;
+    this.setState({ account });
+}
+
+handleSubmit = e => {
+    e.preventDefault();
+    const username = this.username.current.value;
+}
+  render() {
+    return (
+      <div>
+        <h1>Login</h1>
+        <form onSubmit={this.handleSubmit}>
+          <div className="form-group">
+            <label htmlFor="username">Username</label>
+            <input 
+                value={this.state.account.username} // setting current value through props 
+                onChange={this.handleChange} // updating the state by handling changes through callback function onChange()
+                id="username" 
+                type="text" 
+                className="form-control" 
+             />
+          </div>
+          <div>
+            <label htmlFor="password">Password</label>
+            <input value={this.state.account.password} id="password" type="text" className="form-control" />
+          </div>
+          <button className="btn btn-primary">Login</button>
+        </form>
+      </div>
+    );
+  }
+}
 ```
 #### 6.6 Handling Multiple Inputs
 ```
+// In loginForm.js
+class LoginForm extends Form {
+// Elements's state handles form's data of the Controlled Element, hence it is the 'single source of truth' for the input elements.
+state = {
+    account: {
+        username: '',
+        password: ''
+    }
+}
 
+// Handling changes for multiple inputs (i.e. username and password)
+handleChange = ({ currentTarget: input }) => {
+    const account = {...this.state.account};
+    account[input.name] = input.value;
+    this.setState({ account });
+}
+
+handleSubmit = e => {
+    e.preventDefault();
+    const username = this.username.current.value;
+}
+  render() {
+    const = { account } = this.state;
+    return (
+      <div>
+        <h1>Login</h1>
+        <form onSubmit={this.handleSubmit}>
+          <div className="form-group">
+            <label htmlFor="username">Username</label>
+            <input 
+                value={account.username} // setting current value through props 
+                onChange={this.handleChange} // updating the state by handling changes through callback function onChange()
+                id="username" 
+                name="username" 
+                type="text" 
+                className="form-control" 
+             />
+          </div>
+          <div>
+            <label htmlFor="password">Password</label>
+            <input 
+                value={account.password} // setting current value through props
+                onChange={this.handleChange} // updating the state by handling changes through callback function onChange()
+                id="password" 
+                name="password" 
+                type="text" 
+                className="form-control" 
+            />
+          </div>
+          <button className="btn btn-primary">Login</button>
+        </form>
+      </div>
+    );
+  }
+}
 ```
 #### 6.7 Common Errors
+1. While building forms, the properties of the state objects must be initialized to either to an empty string or some value received from the server.
+2. 'null' and 'undefined' cannot be used as the value of a controlled element.
 ```
-
+// In loginForm.js
+class LoginForm extends Form {
+    state = {
+        account: {
+            username: null, // warning
+            password: ''
+        }
+    }
+...
+...
+}
 ```
 #### 6.8 Extracting a Reusable Input
 ```
