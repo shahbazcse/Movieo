@@ -3008,7 +3008,7 @@ handleSubmit = e => {
 class LoginForm extends Form {
     state = {
         account: {
-            username: null, // warning
+            username: null, // WARNING
             password: ''
         }
     }
@@ -3018,15 +3018,151 @@ class LoginForm extends Form {
 ```
 #### 6.8 Extracting a Reusable Input
 ```
+// In loginForm.js
+import Input from './common/input';
 
+class LoginForm extends Form {
+...
+...
+  render() {
+    const = { account } = this.state;
+    return (
+      <div>
+        <h1>Login</h1>
+        <form onSubmit={this.handleSubmit}>
+          <Input
+            name="username"
+            value={account.username}
+            label="Username"
+            onChange={this.handleChange}
+          />
+          <Input
+            name="password"
+            value={account.password}
+            label="Password"
+            onChange={this.handleChange}
+          />
+          <button className="btn btn-primary">Login</button>
+        </form>
+      </div>
+    );
+  }
+}
+
+// In input.jsx
+import React from "react";
+// Extracted reusable input component
+const Input = ({ name, label, value, onChange }) => {
+    return (
+        <div className="form-group">
+            <label htmlFor={name}>{label}</label>
+            <input
+                value={value}
+                onChange={onChange}
+                id={name}
+                name={name}
+                type="text"
+                className="form-control"
+            />
+        </div>
+    );
+};
+export default Input;
 ```
 #### 6.9 Validation
+Form validation in React allows an error message to be displayed if the user has not correctly filled out the form with the expected type of input.
 ```
+// In loginForm.js
+class LoginForm extends Form {
+state = {
+    account: {
+        username: '',
+        password: ''
+    },
+    errors: {}
+}
 
+handleChange = ({ currentTarget: input }) => {
+    const account = {...this.state.account};
+    account[input.name] = input.value;
+    this.setState({ account });
+}
+    
+// Validate method to implement validation in the form
+validate = () => {
+    return {username: "Username is required."};
+}
+
+// handleSubmit method handles and validates the form and checks for any error in the input field
+handleSubmit = e => {
+    e.preventDefault();
+    
+    const errors = this.validate();
+    this.setState({ errors });
+    if(errors) return;
+    
+    console.log("Submitted");
+}
+  render() {
+    const = { account } = this.state;
+    return (
+      <div>
+        <h1>Login</h1>
+        <form onSubmit={this.handleSubmit}>
+          ...
+          ...
+        </form>
+      </div>
+    );
+  }
+}
 ```
 #### 6.10 Basic Validation Implementation
 ```
+// In loginForm.js
+class LoginForm extends Form {
+state = {
+    account: {
+        username: '',
+        password: ''
+    },
+    errors: {}
+}
 
+handleChange = ({ currentTarget: input }) => {
+    const account = {...this.state.account};
+    account[input.name] = input.value;
+    this.setState({ account });
+}
+
+// Basic validation implementation
+validate = () => {
+    const errors = {};
+    
+    const { account } = this.state;
+    if(account.username.trim() === "")
+        errors.username = "Username is required";
+    if(account.password.trim() === "")
+        errors.password = "Password is required";
+    
+    return Object.keys(errors).length === 0 ? null : errors;
+};
+
+handleSubmit = e => {
+    e.preventDefault();
+    
+    const errors = this.validate();
+    console.log(errors);
+    this.setState({ errors });
+    if(errors) return;
+    
+    console.log("Submitted");
+}
+  render() {
+    ...
+    ...
+  }
+}
 ```
 #### 6.11 Displaying Validation Errors
 ```
