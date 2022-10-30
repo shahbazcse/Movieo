@@ -3166,15 +3166,204 @@ handleSubmit = e => {
 ```
 #### 6.11 Displaying Validation Errors
 ```
+// In input.jsx
 
+const Input = ({ name, label, value, error, onChange }) => {
+  return (
+    <div className="form-group">
+      <label htmlFor={name}>{label}</label>
+      <input {...rest} name={name} id={name} className="form-control" />
+      {error && <div className="alert alert-danger">{error}</div>} // Error message displayed in this div using conditional rendering, i.e. if error is truthy div will be return and if error is falsy div will be ignored
+    </div>
+  );
+};
+    
+// In loginForm.jsx
+
+class LoginForm extends Form {
+state = {
+    account: {
+        username: '',
+        password: ''
+    },
+    errors: {}
+}
+...
+...
+handleSubmit = e => {
+    e.preventDefault();
+    
+    const errors = this.validate();
+    this.setState({ errors: errors || {} }); // errors property should always set to an object, it should never be empty
+    if(errors) return;
+    
+    console.log("Submitted");
+}
+  render() {
+    const = { account, errors } = this.state;
+    return (
+      <div>
+        <h1>Login</h1>
+        <form onSubmit={this.handleSubmit}>
+          <Input
+            name="username"
+            value={account.username}
+            label="Username"
+            onChange={this.handleChange}
+            error={errors.username} // passing error prop
+          />
+          <Input
+            name="password"
+            value={account.password}
+            label="Password"
+            onChange={this.handleChange}
+            error={errors.password} // passing error prop
+          />
+          <button className="btn btn-primary">Login</button>
+        </form>
+      </div>
+    );
+  }
+}
 ```
 #### 6.12 Validation on Change
 ```
+// In loginForm.jsx
 
+class LoginForm extends Form {
+state = {
+    account: {
+        username: '',
+        password: ''
+    },
+    errors: {}
+}
+    
+validate = () => {
+    const errors = {};
+    
+    const { account } = this.state;
+    if(account.username.trim() === "")
+        errors.username = "Username is required";
+    if(account.password.trim() === "")
+        errors.password = "Password is required";
+    
+    return Object.keys(errors).length === 0 ? null : errors;
+};
+
+// validates one input
+validateProperty = ({ name, value }) => {
+    if(name === "username"){
+        if(value.trim() === "") return "Username is required";
+    }
+    if(name === "password"){
+        if(value.trim() === "") return "Password is required";
+    }
+};
+  
+// validates the entire form on change
+handleChange = ({ currentTarget: input }) => {
+    const errors = {...this.state.errors};
+    const errorMessage = this.validateProperty(input);
+    if(errorMessage) errors[input.name] = errorMessage;
+    else delete errors[input.name];
+    
+    const account = {...this.state.account};
+    account[input.name] = input.value;
+    
+    this.setState({ account, errors });
+}
+
+handleSubmit = e => {
+    e.preventDefault();
+    
+    const errors = this.validate();
+    this.setState({ errors: errors || {} });
+    if(errors) return;
+    
+    console.log("Submitted");
+}
+  render() {
+    ...
+    ...
+  }
+}
 ```
 #### 6.13 Exploring Joi
+1. Joi in react: Joi module is a popular module for data validation. This module validates the data based on schemas. There are various functions like optional(), required(), min(), max(), etc which make it easy to use and a user-friendly module for validating the data.
+2. Joi abortEarly: By default, Joi terminates the validation as soon as an error is encountered.
 ```
+// In loginForm.jsx
 
+import Joi from 'joi-browser';
+    
+class LoginForm extends Form {
+state = {
+    account: {
+        username: '',
+        password: ''
+    },
+    errors: {}
+}
+
+// Joi schema    
+schema = {
+    username: Joi.string().required(),
+    password: Joi.string().required()
+}
+    
+validate = () => {
+    const result = Joi.validate(this.state.account, this.schema, { abortEarly: false });
+    console.log(result);
+    
+    const errors = {};
+    
+    const { account } = this.state;
+    if(account.username.trim() === "")
+        errors.username = "Username is required";
+    if(account.password.trim() === "")
+        errors.password = "Password is required";
+    
+    return Object.keys(errors).length === 0 ? null : errors;
+};
+
+// validates one input
+validateProperty = ({ name, value }) => {
+    if(name === "username"){
+        if(value.trim() === "") return "Username is required";
+    }
+    if(name === "password"){
+        if(value.trim() === "") return "Password is required";
+    }
+};
+  
+// validates the entire form on change
+handleChange = ({ currentTarget: input }) => {
+    const errors = {...this.state.errors};
+    const errorMessage = this.validateProperty(input);
+    if(errorMessage) errors[input.name] = errorMessage;
+    else delete errors[input.name];
+    
+    const account = {...this.state.account};
+    account[input.name] = input.value;
+    
+    this.setState({ account, errors });
+}
+
+handleSubmit = e => {
+    e.preventDefault();
+    
+    const errors = this.validate();
+    this.setState({ errors: errors || {} });
+    if(errors) return;
+    
+    console.log("Submitted");
+}
+  render() {
+    ...
+    ...
+  }
+}
 ```
 #### 6.14 Validating a Form using Joi
 ```
