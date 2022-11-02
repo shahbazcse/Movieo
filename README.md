@@ -3742,44 +3742,288 @@ const Input = ({ name, label, error, ...rest }) => {
 ## 7. Calling Backend Services:
 
 #### 7.1 JSON Placeholder  
-```
+1. JSON Placeholder: https://jsonplaceholder.typicode.com  
+    i. It is used for API testing  
+    ii. It provides publically accessable endpoints for API testing by sending HTTP requests(GET, POST, PUT, DELETE)  
+    iii. When we make an HTTP request to the endpoints, we get an array of objects
+2. JSONView Extension(Chrome/Firefox): It structures and formats the JSON data to make it more readable in browsers  
 
-```
 #### 7.2 HTTP Clients  
-```
+Libraries for making HTTP Requests:  
+1. Fetch API
+2. jQuery AJAX
+3. Axios: https://www.npmjs.com/package/axios
 
-```
 #### 7.3 Getting Data  
+1. The right place to call the server and get data using (axios.get), is in the componentDidMount() lifecycle hook.
+2. Promise:
+    i. A promise is an object that holds the result of an asynchronous operation(asynchronous operation completes in the future). After sending an HTTP request, there is always some delay until we get the reponse, it doesn't happen immediately. So the promise object promises to hold the result of an asynchronous operation.
+    ii. Initially a promise remains in the pending state until the asynchronous operation is completed
+    iii. After the operation is completed, the state changes to resolved(in case of success) or rejected(in case of failure)
+3. await & async:  
+    a. Await function is used to wait for the promise. It could be used within the async function block only. It makes the code wait until the promise returns a result. It only makes the async block wait.  
+    b. Async functions will always return a value. It makes sure that a promise is returned and if it is not returned then JavaScript automatically wraps it in a promise which is resolved with its value.
 ```
+// In App.js
+import axois from "axios";
 
+class App extends Component{
+    state = {
+        posts: []
+    };
+    // call the server and get data in componentDidMount()
+    async componentDidMount(){
+        // promise object holds the result of the asynchronous operation
+        const { data: posts } = await axios.get("https://jsonplaceholder.typicode.com/posts"); // data is the array of objects, the response we receive from the API
+        this.setState({ posts });
+    }
+    ...
+    ...
+}
 ```
 #### 7.4 Creating Data  
 ```
+// In App.js
+import axois from "axios";
 
+const apiEndpoint = "https://jsonplaceholder.typicode.com/posts";
+
+class App extends Component{
+    state = {
+        posts: [],
+    };
+
+  async componentDidMount() {
+    const { data: posts } = await axios.get(apiEndpoint);
+    this.setState({ posts });
+  }
+
+  handleAdd = async () => {
+    // Creating data
+    const obj = { title: "a", body: "b" };
+    
+    // Sending data by passing 'obj' to API using axios.post
+    const { data: post } = await axios.post(apiEndpoint, obj);
+    
+    // Updating the view
+    const posts = [post, ...this.state.posts];
+    this.setState({ posts });
+  };
+    ...
+    ...
+}
 ```
 #### 7.5 Lifecycle of a request  
-```
+<p align="center">
+    <img src="https://www.oreilly.com/api/v2/epubs/9781788397483/files/assets/4cee1e13-6f9e-443a-8196-b833459e2b7a.png" height="500px" width="850px">  
+</p>
 
-```
+<b><p align="center">Make Request -> Receive Response</p></b>  
+  
+1. Common HTTP Request Methods:  
+    i. GET: For getting data  
+    ii. POST: For creating data  
+    iii. PUT: For updating data  
+    iv. DELETE: For deleting data  
+
+2. HTTP Option Request: For security reasons, when we send data to a different domain (cross-domain requests) such as API endpoints, browsers usually send a 'preflight' HTTP OPTIONS request to the target server before sending the data there.
+
+3. HTTP Response: The response object received after making an HTTP request which includes data, header, status, etc.
+
 #### 7.6 Updating Data  
+axios.put(): It is used to update the entire object
+axios.patch(): It is used to update a particular property of the object
 ```
+// In App.js
+import axois from "axios";
 
+const apiEndpoint = "https://jsonplaceholder.typicode.com/posts";
+
+class App extends Component{
+    state = {
+        posts: [],
+    };
+
+  async componentDidMount() {
+    const { data: posts } = await axios.get(apiEndpoint);
+    this.setState({ posts });
+  }
+
+  handleUpdate = async (post) => {
+    // Updating data
+    post.title = "UPDATED";
+    
+    // Sending changed data by passing 'post' object to API using axios.put
+    await axios.put(apiEndpoint + "/" + post.id, post);
+
+    // Updating the view
+    const posts = [...this.state.posts];
+    const index = posts.indexOf(post);
+    posts[index] = { ...post };
+    this.setState({ posts });
+  };
+    ...
+    ...
+}
 ```
 #### 7.7 Deleting Data  
 ```
+// In App.js
+import axois from "axios";
 
+const apiEndpoint = "https://jsonplaceholder.typicode.com/posts";
+
+class App extends Component{
+    state = {
+        posts: [],
+    };
+
+  async componentDidMount() {
+    const { data: posts } = await axios.get(apiEndpoint);
+    this.setState({ posts });
+  }
+
+  handleDelete = async (post) => {
+    // Sending a request to delete a post using its id via axios.delete 
+    await axios.delete(apiEndpoint + "/" + post.id);
+    
+    // Updating the view by filtering the deleted post
+    const posts = this.state.posts.filter(p => p.id !== post.id);
+    this.setState({ posts });
+  };
+    ...
+    ...
+}
 ```
 #### 7.8 Optimistic vs Pessimistic Updates  
+1. Pessimistic Update:  
+    i. In this, we call the server first and then update the view  
+    ii. The response is received after some delay, hence the view will also be updated after some delay  
+    iii. While calling the server if an error occurs, the view will not be updated  
+    iv. Call to server may succeed or fail  
+    
 ```
+handleDelete = async (post) => {
+    // Calling the server first will return a response after some delay
+    await axios.delete(apiEndpoint + "/" + post.id);
+    
+    // Then updating the view after some delay
+    const posts = this.state.posts.filter(p => p.id !== post.id);
+    this.setState({ posts });
+  };
+```
+    
+2. Optimistic Update:  
+    i. First and foremost, we will store a reference to the original state  
+    ii. We assume that most of the time, the call to the server succeeds  
+    iii. To avoid any delay in updating the view, we will update the view first assuming the server call will succeed later  
+    iv. In case the server call fails, we can revert the view update back to the previous/original state  
+    v. This implementation gives the illusion of fast view update  
+    vi. In case the server call fails, we can detect the error and revert the view update by placing the server call in the try-catch block  
+    
+```
+handleDelete = async (post) => {
+    // Keeping reference to the original state
+    const originalPosts = this.state.posts;
 
+    // Updating the view before the server call assuming it succeeds
+    const posts = this.state.posts.filter((p) => p.id !== post.id);
+    this.setState({ posts });
+
+    // Placing the server call inside try-catch block to detect error and reverting the view update back to the original state, if the server call fails
+    try {
+      await axios.delete(apiEndpoint + "/" + post.id);
+    } catch (ex) {
+      alert("Something failed while deleting the post!");
+      this.setState({ posts: originalPosts });
+    }
+};
 ```
 #### 7.9 Expected vs Unexpected Errors  
+1. Expected Errors: Errors that the API endpoints predicts and returns  
+    i. Eg: (404: not found, 400: bad request) - CLIENT ERRORS  
+    ii. How to handle: Display a specific error message  
+2. Unexpected Errors: Errors that are not expected to happen in normal situations  
+    i. Eg: (network down, server down, DB down, bug in code)  
+    ii. How to handle: Log the errors and display a generic and friendly error message  
 ```
+handleDelete = async (post) => {
+    const originalPosts = this.state.posts;
 
+    const posts = this.state.posts.filter((p) => p.id !== post.id);
+    this.setState({ posts });
+
+    try {
+      await axios.delete(apiEndpoint + "/" + post.id);
+    } catch (ex) {
+      // Expected Error handling for specific status code
+      if(ex.response && ex.response.status === 404){
+        alert("This post has already been deleted.");
+      }
+      // Unexpected Error
+      else{
+        console.log("Logging the error");
+        alert("Something failed while deleting the post!");
+      }
+      this.setState({ posts: originalPosts });
+    }
+};
 ```
 #### 7.10 Handling Unexpected Errors Globally  
-```
+1. axios.interceptors: It can be used to intercept the requests and responses, and if a response with an error is found, it can be handled globally. Interceptors are automatically implemented for all the server calls in the module  
 
+2. axios.interceptors.response.use(success, error) method: It takes two parameters, both the parameters are functions(first parameter for successful response, second parameter for response with error)  
+
+3. We should only use try-catch block if we want to handle that error in a specific way, otherwise we should leave the error handling to the interceptors  
+```
+// In App.js
+import axois from "axios";
+
+const apiEndpoint = "https://jsonplaceholder.typicode.com/posts";
+
+axios.interceptors.response.use(null, (error) => {
+    // Expected Error
+    const expectedError =
+      error.response &&
+      error.response.status >= 400 &&
+      error.response.status < 500;
+    
+    // Unexpected error
+    if (!expectedError) {
+        console.log("Logging the error",error);
+        alert("An unexpected error occurred.");
+    }
+    return Promise.reject(error); // It passes control to the catch block for further reverting the view update to the original state, in case of using try-catch block
+});
+
+class App extends Component {
+  state = {
+    posts: [],
+  };
+
+  async componentDidMount() {
+    // pending -> resolved (success) OR rejected (failure)
+    const { data: posts } = await http.get(config.apiEndpoint);
+    this.setState({ posts });
+  }
+  
+  handleDelete = async (post) => {
+    const originalPosts = this.state.posts;
+
+    const posts = this.state.posts.filter((p) => p.id !== post.id);
+    this.setState({ posts });
+
+    try {
+      await axios.delete(apiEndpoint + "/" + post.id);
+    } 
+    // Error handling for specific status code and for specific purpose(reverting the view update)
+    catch (ex) {
+      if(ex.response && ex.response.status === 404){
+        alert("This post has already been deleted.");
+      }
+      this.setState({ posts: originalPosts }); // reverting the view update back to original state
+    }
+ };
 ```
 #### 7.11 Extracting a Reusable HTTP Service  
 ```
