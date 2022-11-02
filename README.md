@@ -4298,12 +4298,33 @@ export default {
 };
 ```
 #### 7.16 Installing MongoDB on Linux  
-```
-
-```
+1. Homebrew: https://brew.sh/  
+   i. Run `/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"`                               
+2. MongoDB:    
+   i. Run `brew install mongodb`  
+   ii. Run `sudo mkdir -p /data/db`  
+   iii. Run ```sudo chown -R `id -un` /data/db```  
+   iv. Run `mongod`                               
+3. MongoDB Compass: https://www.mongodb.com/try/download/compass  
+   i. Install the package  
+   ii. Open the app and connect to host    
+                                  
 #### 7.17 Setting Up Postman (#21)  
+1. Postman Chrome Extension: https://chrome.google.com/webstore/detail/postman/fhbjgbiflinjbdggehcddcbncdddomop?hl=en  
+    i. Open the extension and paste API endpoint url  
+    ii. Perform CRUD Operations  
+2. Disabling Authentication:  
+   i. Setting "requiresAuth" as false will disable authentication in the database  
+   ii. Restart mongodb server after making changes                                 
 ```
+// In /config/default.json
 
+{
+  "jwtPrivateKey": "unsecureKey",
+  "db": "mongodb://localhost/vidly",
+  "port": "3900",
+  "requiresAuth": false
+}
 ```
 #### 7.18 Adding HTTP and Log Services  
 ```
