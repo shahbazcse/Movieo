@@ -2816,74 +2816,901 @@ class App extends Component {
 ## 6. Forms:
 
 #### 6.1 Introduction
-```
+Form is built using Bootstrap form template: https://getbootstrap.com/docs/4.3/components/forms/  
+For each login form, we have to add a Route in App.js and NavLink in the navBar.jsx
 
-```
 #### 6.2 Building a Bootstrap Form
 ```
-
+// In loginForm.js
+class LoginForm extends Form {
+  render() {
+    return (
+      <div>
+        <h1>Login</h1>
+        <form> // using Bootstrap Form
+          <div>
+            <label htmlFor="username">Username</label>
+            <input id="username" type="text" className="form-control" />
+          </div>
+          <div>
+            <label htmlFor="password">Password</label>
+            <input id="password" type="text" className="form-control" />
+          </div>
+          <button className="btn btn-primary">Login</button>
+        </form>
+      </div>
+    );
+  }
+}
 ```
 #### 6.3 Handling Form Submission
+To avoid the full page reload while submitting, we use preventDefault().
 ```
-
+// In loginForm.js
+class LoginForm extends Form {
+handleSubmit = e => {
+    e.preventDefault(); // To avoid the full page reload on submitting form
+}
+  render() {
+    return (
+      <div>
+        <h1>Login</h1>
+        <form onSubmit={this.handleSubmit}>
+          ...
+          ...
+        </form>
+      </div>
+    );
+  }
+}
 ```
 #### 6.4 Refs
+Refs: Refs are a function provided by React to access the DOM element and the React element that you might have created on your own.
 ```
-
+// In loginForm.js
+class LoginForm extends Form {
+handleSubmit = e => {
+    e.preventDefault();
+    const username = this.username.current.value;
+}
+  render() {
+    return (
+      <div>
+        <h1>Login</h1>
+        <form onSubmit={this.handleSubmit}>
+          <div className="form-group">
+            <label htmlFor="username">Username</label>
+            <input autoFocus ref={this.username} id="username" type="text" className="form-control" /> // Ref is used access the DOM element
+          </div>
+          <div>
+            <label htmlFor="password">Password</label>
+            <input id="password" type="text" className="form-control" />
+          </div>
+          <button className="btn btn-primary">Login</button>
+        </form>
+      </div>
+    );
+  }
+}
 ```
 #### 6.5 Controlled Elements
+Controlled Elements: In React, Controlled Elements are those in which form’s data is handled by the elements’s state. It takes its current value through props and makes changes through callbacks like onClick,onChange, etc. A parent component manages its own state and passes the new values as props to the controlled elements.
 ```
+// In loginForm.js
+class LoginForm extends Form {
+// Elements's state handles form's data of the Controlled Element, hence it is the 'single source of truth' for the input elements.
+state = {
+    account: {
+        username: '',
+        password: ''
+    }
+}
 
+handleChange = e => {
+    const account = {...this.state.account};
+    account.username = e.currentTarget.value;
+    this.setState({ account });
+}
+
+handleSubmit = e => {
+    e.preventDefault();
+    const username = this.username.current.value;
+}
+  render() {
+    return (
+      <div>
+        <h1>Login</h1>
+        <form onSubmit={this.handleSubmit}>
+          <div className="form-group">
+            <label htmlFor="username">Username</label>
+            <input 
+                value={this.state.account.username} // setting current value through props 
+                onChange={this.handleChange} // updating the state by handling changes through callback function onChange()
+                id="username" 
+                type="text" 
+                className="form-control" 
+             />
+          </div>
+          <div>
+            <label htmlFor="password">Password</label>
+            <input value={this.state.account.password} id="password" type="text" className="form-control" />
+          </div>
+          <button className="btn btn-primary">Login</button>
+        </form>
+      </div>
+    );
+  }
+}
 ```
 #### 6.6 Handling Multiple Inputs
 ```
+// In loginForm.js
+class LoginForm extends Form {
+// Elements's state handles form's data of the Controlled Element, hence it is the 'single source of truth' for the input elements.
+state = {
+    account: {
+        username: '',
+        password: ''
+    }
+}
 
+// Handling changes for multiple inputs (i.e. username and password)
+handleChange = ({ currentTarget: input }) => {
+    const account = {...this.state.account};
+    account[input.name] = input.value;
+    this.setState({ account });
+}
+
+handleSubmit = e => {
+    e.preventDefault();
+    const username = this.username.current.value;
+}
+  render() {
+    const = { account } = this.state;
+    return (
+      <div>
+        <h1>Login</h1>
+        <form onSubmit={this.handleSubmit}>
+          <div className="form-group">
+            <label htmlFor="username">Username</label>
+            <input 
+                value={account.username} // setting current value through props 
+                onChange={this.handleChange} // updating the state by handling changes through callback function onChange()
+                id="username" 
+                name="username" 
+                type="text" 
+                className="form-control" 
+             />
+          </div>
+          <div>
+            <label htmlFor="password">Password</label>
+            <input 
+                value={account.password} // setting current value through props
+                onChange={this.handleChange} // updating the state by handling changes through callback function onChange()
+                id="password" 
+                name="password" 
+                type="text" 
+                className="form-control" 
+            />
+          </div>
+          <button className="btn btn-primary">Login</button>
+        </form>
+      </div>
+    );
+  }
+}
 ```
 #### 6.7 Common Errors
+1. While building forms, the properties of the state objects must be initialized to either to an empty string or some value received from the server.
+2. 'null' and 'undefined' cannot be used as the value of a controlled element.
 ```
-
+// In loginForm.js
+class LoginForm extends Form {
+    state = {
+        account: {
+            username: null, // WARNING
+            password: ''
+        }
+    }
+...
+...
+}
 ```
 #### 6.8 Extracting a Reusable Input
 ```
+// In loginForm.js
+import Input from './common/input';
 
+class LoginForm extends Form {
+...
+...
+  render() {
+    const = { account } = this.state;
+    return (
+      <div>
+        <h1>Login</h1>
+        <form onSubmit={this.handleSubmit}>
+          <Input
+            name="username"
+            value={account.username}
+            label="Username"
+            onChange={this.handleChange}
+          />
+          <Input
+            name="password"
+            value={account.password}
+            label="Password"
+            onChange={this.handleChange}
+          />
+          <button className="btn btn-primary">Login</button>
+        </form>
+      </div>
+    );
+  }
+}
+
+// In input.jsx
+import React from "react";
+// Extracted reusable input component
+const Input = ({ name, label, value, onChange }) => {
+    return (
+        <div className="form-group">
+            <label htmlFor={name}>{label}</label>
+            <input
+                value={value}
+                onChange={onChange}
+                id={name}
+                name={name}
+                type="text"
+                className="form-control"
+            />
+        </div>
+    );
+};
+export default Input;
 ```
 #### 6.9 Validation
+Form validation in React allows an error message to be displayed if the user has not correctly filled out the form with the expected type of input.
 ```
+// In loginForm.js
+class LoginForm extends Form {
+state = {
+    account: {
+        username: '',
+        password: ''
+    },
+    errors: {}
+}
 
+handleChange = ({ currentTarget: input }) => {
+    const account = {...this.state.account};
+    account[input.name] = input.value;
+    this.setState({ account });
+}
+    
+// Validate method to implement validation in the form
+validate = () => {
+    return {username: "Username is required."};
+}
+
+// handleSubmit method handles and validates the form and checks for any error in the input field
+handleSubmit = e => {
+    e.preventDefault();
+    
+    const errors = this.validate();
+    this.setState({ errors });
+    if(errors) return;
+    
+    console.log("Submitted");
+}
+  render() {
+    const = { account } = this.state;
+    return (
+      <div>
+        <h1>Login</h1>
+        <form onSubmit={this.handleSubmit}>
+          ...
+          ...
+        </form>
+      </div>
+    );
+  }
+}
 ```
 #### 6.10 Basic Validation Implementation
 ```
+// In loginForm.js
+class LoginForm extends Form {
+state = {
+    account: {
+        username: '',
+        password: ''
+    },
+    errors: {}
+}
 
+handleChange = ({ currentTarget: input }) => {
+    const account = {...this.state.account};
+    account[input.name] = input.value;
+    this.setState({ account });
+}
+
+// Basic validation implementation
+validate = () => {
+    const errors = {};
+    
+    const { account } = this.state;
+    if(account.username.trim() === "")
+        errors.username = "Username is required";
+    if(account.password.trim() === "")
+        errors.password = "Password is required";
+    
+    return Object.keys(errors).length === 0 ? null : errors;
+};
+
+handleSubmit = e => {
+    e.preventDefault();
+    
+    const errors = this.validate();
+    console.log(errors);
+    this.setState({ errors });
+    if(errors) return;
+    
+    console.log("Submitted");
+}
+  render() {
+    ...
+    ...
+  }
+}
 ```
 #### 6.11 Displaying Validation Errors
 ```
+// In input.jsx
 
+const Input = ({ name, label, value, error, onChange }) => {
+  return (
+    <div className="form-group">
+      <label htmlFor={name}>{label}</label>
+      <input {...rest} name={name} id={name} className="form-control" />
+      {error && <div className="alert alert-danger">{error}</div>} // Error message displayed in this div using conditional rendering, i.e. if error is truthy div will be return and if error is falsy div will be ignored
+    </div>
+  );
+};
+    
+// In loginForm.jsx
+
+class LoginForm extends Form {
+state = {
+    account: {
+        username: '',
+        password: ''
+    },
+    errors: {}
+}
+...
+...
+handleSubmit = e => {
+    e.preventDefault();
+    
+    const errors = this.validate();
+    this.setState({ errors: errors || {} }); // errors property should always set to an object, it should never be empty
+    if(errors) return;
+    
+    console.log("Submitted");
+}
+  render() {
+    const = { account, errors } = this.state;
+    return (
+      <div>
+        <h1>Login</h1>
+        <form onSubmit={this.handleSubmit}>
+          <Input
+            name="username"
+            value={account.username}
+            label="Username"
+            onChange={this.handleChange}
+            error={errors.username} // passing error prop
+          />
+          <Input
+            name="password"
+            value={account.password}
+            label="Password"
+            onChange={this.handleChange}
+            error={errors.password} // passing error prop
+          />
+          <button className="btn btn-primary">Login</button>
+        </form>
+      </div>
+    );
+  }
+}
 ```
 #### 6.12 Validation on Change
 ```
+// In loginForm.jsx
 
+class LoginForm extends Form {
+state = {
+    account: {
+        username: '',
+        password: ''
+    },
+    errors: {}
+}
+    
+validate = () => {
+    const errors = {};
+    
+    const { account } = this.state;
+    if(account.username.trim() === "")
+        errors.username = "Username is required";
+    if(account.password.trim() === "")
+        errors.password = "Password is required";
+    
+    return Object.keys(errors).length === 0 ? null : errors;
+};
+
+// validates one input
+validateProperty = ({ name, value }) => {
+    if(name === "username"){
+        if(value.trim() === "") return "Username is required";
+    }
+    if(name === "password"){
+        if(value.trim() === "") return "Password is required";
+    }
+};
+  
+// validates the entire form on change
+handleChange = ({ currentTarget: input }) => {
+    const errors = {...this.state.errors};
+    const errorMessage = this.validateProperty(input);
+    if(errorMessage) errors[input.name] = errorMessage;
+    else delete errors[input.name];
+    
+    const account = {...this.state.account};
+    account[input.name] = input.value;
+    
+    this.setState({ account, errors });
+}
+
+handleSubmit = e => {
+    e.preventDefault();
+    
+    const errors = this.validate();
+    this.setState({ errors: errors || {} });
+    if(errors) return;
+    
+    console.log("Submitted");
+}
+  render() {
+    ...
+    ...
+  }
+}
 ```
 #### 6.13 Exploring Joi
+1. Joi in react: Joi module is a popular module for data validation. This module validates the data based on schemas. There are various functions like optional(), required(), min(), max(), etc which make it easy to use and a user-friendly module for validating the data.
+2. Joi abortEarly: By default, Joi terminates the validation as soon as an error is encountered.
 ```
+// In loginForm.jsx
 
+import Joi from 'joi-browser';
+    
+class LoginForm extends Form {
+state = {
+    account: {
+        username: '',
+        password: ''
+    },
+    errors: {}
+}
+
+// Joi schema    
+schema = {
+    username: Joi.string().required(),
+    password: Joi.string().required()
+}
+    
+validate = () => {
+    const result = Joi.validate(this.state.account, this.schema, { abortEarly: false });
+    console.log(result);
+    
+    const errors = {};
+    
+    const { account } = this.state;
+    if(account.username.trim() === "")
+        errors.username = "Username is required";
+    if(account.password.trim() === "")
+        errors.password = "Password is required";
+    
+    return Object.keys(errors).length === 0 ? null : errors;
+};
+
+// validates one input
+validateProperty = ({ name, value }) => {
+    if(name === "username"){
+        if(value.trim() === "") return "Username is required";
+    }
+    if(name === "password"){
+        if(value.trim() === "") return "Password is required";
+    }
+};
+  
+// validates the entire form on change
+handleChange = ({ currentTarget: input }) => {
+    const errors = {...this.state.errors};
+    const errorMessage = this.validateProperty(input);
+    if(errorMessage) errors[input.name] = errorMessage;
+    else delete errors[input.name];
+    
+    const account = {...this.state.account};
+    account[input.name] = input.value;
+    
+    this.setState({ account, errors });
+}
+
+handleSubmit = e => {
+    e.preventDefault();
+    
+    const errors = this.validate();
+    this.setState({ errors: errors || {} });
+    if(errors) return;
+    
+    console.log("Submitted");
+}
+  render() {
+    ...
+    ...
+  }
+}
 ```
 #### 6.14 Validating a Form using Joi
 ```
+// In loginForm.jsx
 
+import Joi from 'joi-browser';
+    
+class LoginForm extends Form {
+state = {
+    account: {
+        username: '',
+        password: ''
+    },
+    errors: {}
+}
+
+// Joi schema    
+schema = {
+    username: Joi.string().required().label('Username'),
+    password: Joi.string().required().label('Password')
+}
+    
+// Validating a Form using Joi
+validate = () => {
+    const options = { abortEarly: false };
+    const { error } = Joi.validate(this.state.account, this.schema, options);
+    if(!error) return null;
+    
+    const errors = {};
+    for(let item of result.error.details)
+        errors[item.path[0]] = item.message;
+    return errors;
+};
+
+// validates one input
+validateProperty = ({ name, value }) => {
+    if(name === "username"){
+        if(value.trim() === "") return "Username is required";
+    }
+    if(name === "password"){
+        if(value.trim() === "") return "Password is required";
+    }
+};
+  
+// validates the entire form on change
+handleChange = ({ currentTarget: input }) => {
+    const errors = {...this.state.errors};
+    const errorMessage = this.validateProperty(input);
+    if(errorMessage) errors[input.name] = errorMessage;
+    else delete errors[input.name];
+    
+    const account = {...this.state.account};
+    account[input.name] = input.value;
+    
+    this.setState({ account, errors });
+}
+
+handleSubmit = e => {
+    e.preventDefault();
+    
+    const errors = this.validate();
+    this.setState({ errors: errors || {} });
+    if(errors) return;
+    
+    console.log("Submitted");
+}
+  render() {
+    ...
+    ...
+  }
+}
 ```
 #### 6.15 Validating a Field using Joi
 ```
+// In loginForm.jsx
 
+import Joi from 'joi-browser';
+    
+class LoginForm extends Form {
+state = {
+    account: {
+        username: '',
+        password: ''
+    },
+    errors: {}
+}
+
+// Joi schema    
+schema = {
+    username: Joi.string().required().label('Username'),
+    password: Joi.string().required().label('Password')
+}
+    
+// Validating a Form using Joi
+validate = () => {
+    const options = { abortEarly: false };
+    const { error } = Joi.validate(this.state.account, this.schema, options);
+    if(!error) return null;
+    
+    const errors = {};
+    for(let item of result.error.details)
+        errors[item.path[0]] = item.message;
+    return errors;
+};
+
+// Validating a Field using Joi
+validateProperty = ({ name, value }) => {
+    const obj = { [name]: value };
+    const schema = { [name]: this.schema[name] };
+    
+    const { error } = Joi.validate(obj, schema);
+    return error ? error.details[0].message : null;
+};
+  
+// validates the entire form on change
+handleChange = ({ currentTarget: input }) => {
+    const errors = {...this.state.errors};
+    const errorMessage = this.validateProperty(input);
+    if(errorMessage) errors[input.name] = errorMessage;
+    else delete errors[input.name];
+    
+    const account = {...this.state.account};
+    account[input.name] = input.value;
+    
+    this.setState({ account, errors });
+}
+
+handleSubmit = e => {
+    e.preventDefault();
+    
+    const errors = this.validate();
+    this.setState({ errors: errors || {} });
+    if(errors) return;
+    
+    console.log("Submitted");
+}
+  render() {
+    ...
+    ...
+  }
+}
 ```
 #### 6.16 Disabling the Submit Button
 ```
+// In loginForm.jsx
 
+class LoginForm extends Form {
+state = {
+    account: {
+        username: '',
+        password: ''
+    },
+    errors: {}
+}
+...
+...
+  render() {
+    const = { account, errors } = this.state;
+    return (
+      <div>
+        <h1>Login</h1>
+        <form onSubmit={this.handleSubmit}>
+          ...
+          ...
+            // this.validate() will either return 'null' which means falsy, or an 'object' which means truthy, hence disabling or enabling the button accordingly
+          <button disabled={this.validate()} className="btn btn-primary">Login</button>
+        </form>
+      </div>
+    );
+  }
+}
 ```
 #### 6.17 Extracting a Reusable Form
+1. Extracting reusable methods from loginForm.jsx to a new reusable component form.jsx
+2. Generalise data used in reusable methods behind the form to suit different kinds of object used as form data. (We will use variable 'data' instead of variable 'account' to make a reusable method that can be used for different kinds of objects as form data)
 ```
+// In form.jsx
+    
+class Form extends Component {
+  state = {
+    data: {},
+    errors: {},
+  };
+  validate = () => {
+    const options = { abortEarly: false };
+    const { error } = Joi.validate(this.state.data, this.schema, options);
+    if (!error) return null;
 
+    const errors = {};
+    for (let item of error.details) errors[item.path[0]] = item.message;
+    return errors;
+  };
+
+  validateProperty = ({ name, value }) => {
+    const obj = { [name]: value };
+    const schema = { [name]: this.schema[name] };
+    const { error } = Joi.validate(obj, schema);
+
+    return error ? error.details[0].message : null;
+  };
+
+  handleSubmit = (e) => {
+    e.preventDefault();
+
+    const errors = this.validate();
+    this.setState({ errors: errors || {} });
+    if (errors) return;
+
+    this.doSubmit();
+  };
+
+  handleChange = ({ currentTarget: input }) => {
+    const errors = { ...this.state.errors };
+    const errorMessage = this.validateProperty(input);
+    if (errorMessage) errors[input.name] = errorMessage;
+    else delete errors[input.name];
+
+    const data = { ...this.state.data };
+    data[input.name] = input.value;
+    this.setState({ data, errors });
+  };
+}
+
+export default Form;
+
+// In loginForm.jsx
+import Form from '';
+
+// Inherits reusable methods of Form component into LoginForm
+class LoginForm extends Form {
+    state = {
+        data: {
+            username: '',
+            password: ''
+        },
+        errors: {}
+    }
+
+    schema = {
+        username: Joi.string().required().label('Username'),
+        password: Joi.string().required().label('Password')
+    }
+    
+    // Extracted all reusable methods from here and moved to the reusable component form.jsx
+
+    doSubmit = () => {
+        // Call the server
+        console.log("Submitted");
+    }
+  render() {
+    const = { data, errors } = this.state;
+    return (
+      <div>
+        <h1>Login</h1>
+        <form onSubmit={this.handleSubmit}>
+          ...
+          ...
+          <button disabled={this.validate()} className="btn btn-primary">Login</button>
+        </form>
+      </div>
+    );
+  }
+}
 ```
 #### 6.18 Extracting Helper Rendering Methods
+1. Input and Button are reusable components that can be extracted and moved to the reusable component form.jsx and they can be used as methods in the loginForm.jsx component.
+2. By using rest and spread operator, we can easily use all the attributes that are in the props object dynamically.
 ```
+// In loginForm.jsx
 
+import Form from '';
+    
+class LoginForm extends Form {
+  state = {
+    data: { username: "", password: "" },
+    errors: {}
+  };
+
+  schema = {
+    username: Joi.string().required().label("Username"),
+    password: Joi.string().required().label("Password"),
+  };
+
+  doSubmit = () => {
+    // Call the server
+  };
+
+  render() {
+    return (
+      <div>
+        <h1>Login</h1>
+        <form onSubmit={this.handleSubmit}>
+          // Reusable rendering methods
+          {this.renderInput("username", "Username")}
+          {this.renderInput("password", "Password", "password")}
+          {this.renderButton("Login")}
+        </form>
+      </div>
+    );
+  }
+}
+
+// In form.jsx
+    
+import Input from "./input";
+    
+class Form extends Component {
+  state = {
+    data: {},
+    errors: {},
+  };
+  ...
+  ...
+  renderButton = (label) => {
+    return (
+      <button disabled={this.validate()} className="btn btn-primary">
+        {label}
+      </button>
+    );
+  };
+
+  renderInput = (name, label, type='text') => {
+    const { data, errors } = this.state;
+    return (
+      <Input
+        type={type}
+        name={name}
+        label={label}
+        value={data[name]}
+        error={errors[name]}
+        onChange={this.handleChange}
+      />
+    );
+  };
+}
+    
+// In input.jsx
+
+// spread and rest operator passes all the props dynamically to the Input component    
+const Input = ({ name, label, error, ...rest }) => {
+  return (
+    <div className="form-group">
+      <label htmlFor={name}>{label}</label>
+      <input {...rest} name={name} id={name} className="form-control" />
+      {error && <div className="alert alert-danger">{error}</div>}
+    </div>
+  );
+};
+    
 ```
