@@ -4002,8 +4002,7 @@ class App extends Component {
   };
 
   async componentDidMount() {
-    // pending -> resolved (success) OR rejected (failure)
-    const { data: posts } = await http.get(config.apiEndpoint);
+    const { data: posts } = await axios.get(apiEndpoint);
     this.setState({ posts });
   }
   
@@ -4026,24 +4025,277 @@ class App extends Component {
  };
 ```
 #### 7.11 Extracting a Reusable HTTP Service  
+Extracting a reusable HTTP service to implement axios interceptors and http CRUD operations globally
 ```
+// In /services/httpService.js
+
+import axios from "axios";
+
+axios.interceptors.response.use(null, (error) => {
+    const expectedError =
+      error.response &&
+      error.response.status >= 400 &&
+      error.response.status < 500;
+    // Unexpected error
+    if (!expectedError) {
+        console.log("Logging the error", error);
+        alert("An unexpected error occurred.");
+    }
+    return Promise.reject(error);
+  });
+
+  // Exporting object for http CRUD operations                                
+  export default {
+    get: axios.get,
+    post: axios.post,
+    put: axios.put,
+    delete: axios.delete
+};
+                                  
+// In App.js
+
+import http from "./services/httpService"; // Importing httpService to implement axios interceptors and http CRUD operations(now we will use http.get, http.delete, etc.)
+                                  
+const apiEndpoint = "https://jsonplaceholder.typicode.com/posts";
+
+class App extends Component {
+  state = {
+    posts: [],
+  };
+
+  async componentDidMount() {
+    const { data: posts } = await http.get(apiEndpoint);
+    this.setState({ posts });
+  }
+  
+  handleDelete = async (post) => {
+    const originalPosts = this.state.posts;
+
+    const posts = this.state.posts.filter((p) => p.id !== post.id);
+    this.setState({ posts });
+
+    try {
+      await http.delete(apiEndpoint + "/" + post.id);
+    }
+    catch (ex) {
+      if(ex.response && ex.response.status === 404){
+        alert("This post has already been deleted.");
+      }
+      this.setState({ posts: originalPosts }); // reverting the view update back to original state
+    }
+ };                                  
 
 ```
 #### 7.12 Extracting a Config Module  
+Extracting a reusable Config module to access API endpoints globally
 ```
+// In /src/config.json
 
+{
+    "apiEndpoint": "https://jsonplaceholder.typicode.com/posts"
+}
+    
+// In App.js
+    
+import config from "./config.json"; // Importing config to access API endpoints(now we will use config.apiEndpoint)
+
+class App extends Component {
+  state = {
+    posts: [],
+  };
+
+  async componentDidMount() {
+    const { data: posts } = await http.get(config.apiEndpoint);
+    this.setState({ posts });
+  }
+  
+  handleDelete = async (post) => {
+    const originalPosts = this.state.posts;
+
+    const posts = this.state.posts.filter((p) => p.id !== post.id);
+    this.setState({ posts });
+
+    try {
+      await http.delete(config.apiEndpoint + "/" + post.id);
+    }
+    catch (ex) {
+      if(ex.response && ex.response.status === 404){
+        alert("This post has already been deleted.");
+      }
+      this.setState({ posts: originalPosts }); // reverting the view update back to original state
+    }
+ };
 ```
 #### 7.13 Displaying Toast Notification  
+React Toastify: https://www.npmjs.com/package/react-toastify  
+It lets us add notification to the app
 ```
+// In /services/httpService.js
 
+import axios from "axios";
+import { toast } from "react-toastify";    
+
+axios.interceptors.response.use(null, (error) => {
+    const expectedError =
+      error.response &&
+      error.response.status >= 400 &&
+      error.response.status < 500;
+    // Unexpected error
+    if (!expectedError) {
+        console.log("Logging the error", error);
+        toast.error("An unexpected error occurred."); // toast.error() helper method to show toast notification for error
+    }
+    return Promise.reject(error);
+  });
+
+  // Exporting object for http CRUD operations                                
+  export default {
+    get: axios.get,
+    post: axios.post,
+    put: axios.put,
+    delete: axios.delete
+};    
+    
+// In App.js
+    
+import http from "./services/httpService";                                  
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+    
+class App extends Component {
+  state = {
+    posts: [],
+  };
+
+  async componentDidMount() {
+    const { data: posts } = await http.get(config.apiEndpoint);
+    this.setState({ posts });
+  }
+  
+  handleDelete = async (post) => {
+    const originalPosts = this.state.posts;
+
+    const posts = this.state.posts.filter((p) => p.id !== post.id);
+    this.setState({ posts });
+
+    try {
+      await http.delete(config.apiEndpoint + "/" + post.id);
+    }
+    catch (ex) {
+      if(ex.response && ex.response.status === 404){
+        alert("This post has already been deleted.");
+      }
+      this.setState({ posts: originalPosts }); // reverting the view update back to original state
+    }
+    render() {
+    return (
+      <React.Fragment>
+        <ToastContainer /> // Component ToastContainer added to the app for showing notifications
+        ...
+        ...
+      </React.Fragment>
+    );
+  }
+};
+    
 ```
 #### 7.14 Logging Errors  
+Logging as a service provider is used to log errors/issues of Apps running in production environment  
+Sentry.io: https://sentry.io  
+Sentry's Raven.js: https://raven-js.readthedocs.io/en/stable/install.html (install using terminal)  
 ```
+// In index.js
 
+import Raven from "raven-js";
+
+// Copied configuration code from Sentry.io user account
+Raven.config(       
+    "https://1a8c43b2e39e4a1b8612b1535800c790@o4504084110245888.ingest.sentry.io/4504084116865024"
+).install();
+    
+ReactDOM.render(<App />, document.getElementById("root"));
+registerServiceWorker();
+    
+// In /services/httpService.js
+    
+import Raven from "raven-js";
+    
+axios.interceptors.response.use(null, (error) => {
+    const expectedError =
+      error.response &&
+      error.response.status >= 400 &&
+      error.response.status < 500;
+    // Unexpected error
+    if (!expectedError) {
+        Raven.captureException(error); // Passing error in Raven to log in Sentry.io
+        toast.error("An unexpected error occurred.");
+    }
+    return Promise.reject(error);
+  });
+                                  
+  export default {
+    get: axios.get,
+    post: axios.post,
+    put: axios.put,
+    delete: axios.delete
+}; 
 ```
 #### 7.15 Extracting a Logger Service  
+Extracting a reusable logger service component that can be accessed in any app file to log errors  
 ```
+// In /services/logService.js
 
+import Raven from "raven-js";
+
+function init(){
+    // Copied configuration code from Sentry.io user account                              
+    Raven.config(
+        "https://1a8c43b2e39e4a1b8612b1535800c790@o4504084110245888.ingest.sentry.io/4504084116865024"
+    ).install();
+}
+
+function log(error){
+    Raven.captureException(error); // Passing error in Raven to log in Sentry.io
+}
+
+// exporting method to install Raven and log errors                                
+export default {
+    init,
+    log
+};                                  
+                                  
+// In index.js
+
+import logger from "./services/logService"; // importing logger service Raven to initialize/install in React App
+
+logger.init(); // Installing logger service Raven
+    
+ReactDOM.render(<App />, document.getElementById("root"));
+registerServiceWorker();
+    
+// In /services/httpService.js
+
+import logger from "./services/logService";
+
+axios.interceptors.response.use(null, (error) => {
+    const expectedError =
+      error.response &&
+      error.response.status >= 400 &&
+      error.response.status < 500;
+    // Unexpected error
+    if (!expectedError) {
+        logger.log(error); // passing error to log function in logger service to log error
+        toast.error("An unexpected error occurred.");
+    }
+    return Promise.reject(error);
+});
+
+export default {
+    get: axios.get,
+    post: axios.post,
+    put: axios.put,
+    delete: axios.delete
+};
 ```
 #### 7.16 Installing MongoDB on Linux  
 ```
