@@ -3739,3 +3739,93 @@ const Input = ({ name, label, error, ...rest }) => {
 };
     
 ```
+## 7. Calling Backend Services:
+
+#### 7.1 JSON Placeholder  
+```
+
+```
+#### 7.2 HTTP Clients  
+```
+
+```
+#### 7.3 Getting Data  
+```
+
+```
+#### 7.4 Creating Data  
+```
+
+```
+#### 7.5 Lifecycle of a request  
+```
+
+```
+#### 7.6 Updating Data  
+```
+
+```
+#### 7.7 Deleting Data  
+```
+
+```
+#### 7.8 Optimistic vs Pessimistic Updates  
+```
+
+```
+#### 7.9 Expected vs Unexpected Errors  
+```
+
+```
+#### 7.10 Handling Unexpected Errors Globally  
+```
+
+```
+#### 7.11 Extracting a Reusable HTTP Service  
+```
+
+```
+#### 7.12 Extracting a Config Module  
+```
+
+```
+#### 7.13 Displaying Toast Notification  
+```
+
+```
+#### 7.14 Logging Errors  
+```
+
+```
+#### 7.15 Extracting a Logger Service  
+```
+
+```
+#### 7.16 Installing MongoDB on Linux  
+```
+
+```
+#### 7.17 Setting Up Postman (#21)  
+```
+
+```
+#### 7.18 Adding HTTP and Log Services  
+```
+
+```
+#### 7.19 Getting data from database (#24 & #25)  
+```
+
+```
+#### 7.20 Extracting a Config File  
+```
+
+```
+#### 7.21 Populating Movie Form (#28 & #29)  
+```
+
+```
+#### 7.22 Saving the Movie (#30 & #31)  
+```
+
+```
