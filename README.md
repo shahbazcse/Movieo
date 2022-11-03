@@ -122,12 +122,12 @@
     7.14 Logging Errors  
     7.15 Extracting a Logger Service  
     7.16 Installing MongoDB on Linux  
-    7.17 Setting Up Postman (#21)  
+    7.17 Setting Up the Node Backend and Postman App  
     7.18 Adding HTTP and Log Services  
-    7.19 Getting data from database (#24 & #25)  
+    7.19 Getting data from database  
     7.20 Extracting a Config File  
-    7.21 Populating Movie Form (#28 & #29)  
-    7.22 Saving the Movie (#30 & #31)  
+    7.21 Populating Movie Form  
+    7.22 Saving the Movie  
 
 ## 1. ES6 Refresher
 
@@ -4122,7 +4122,7 @@ class App extends Component {
       if(ex.response && ex.response.status === 404){
         alert("This post has already been deleted.");
       }
-      this.setState({ posts: originalPosts }); // reverting the view update back to original state
+      this.setState({ posts: originalPosts });
     }
  };
 ```
@@ -4309,11 +4309,13 @@ export default {
    i. Install the package  
    ii. Open the app and connect to host    
                                   
-#### 7.17 Setting Up Postman (#21)  
-1. Postman Chrome Extension: https://chrome.google.com/webstore/detail/postman/fhbjgbiflinjbdggehcddcbncdddomop?hl=en  
+#### 7.17 Setting Up the Node Backend and Postman App  
+1. Download Vidly node backend: https://github.com/mosh-hamedani/vidly-api-node  
+    i. Clone the repository in the same directory containing the vidly app
+2. Postman Chrome Extension: https://chrome.google.com/webstore/detail/postman/fhbjgbiflinjbdggehcddcbncdddomop?hl=en  
     i. Open the extension and paste API endpoint url  
     ii. Perform CRUD Operations  
-2. Disabling Authentication:  
+3. Disabling Authentication:  
    i. Setting "requiresAuth" as false will disable authentication in the database  
    ii. Restart mongodb server after making changes                                 
 ```
@@ -4328,21 +4330,259 @@ export default {
 ```
 #### 7.18 Adding HTTP and Log Services  
 ```
+// In /services/httpService.js
+
+    import axios from "axios";
+    import logger from "./logService"
+    import { toast } from "react-toastify";
+
+    axios.interceptors.response.use(null, (error) => {
+        const expectedError =
+          error.response &&
+          error.response.status >= 400 &&
+          error.response.status < 500;
+        if (!expectedError) {
+            logger.log(error);
+            toast.error("An unexpected error occurred.");
+        }
+        return Promise.reject(error);
+    });
+
+    export default {
+        get: axios.get,
+        post: axios.post,
+        put: axios.put,
+        delete: axios.delete
+    };    
+
+// In /services/logService.js
+
+    function init(){
+    }
+
+    function log(error){
+        console.error(error);
+        // Raven.captureException(error);
+    }
+
+    export default {
+        init,
+        log
+    };
+
+// In App.js
+
+import { ToastContainer } from "react-toastify";
+
+class App extends Component {
+  render() {
+    return (
+      <React.Fragment>
+        <ToastContainer /> // Component ToastContainer added to the app for showing notifications
+        ...
+        ...
+      </React.Fragment>
+    );
+  }
+}
 
 ```
-#### 7.19 Getting data from database (#24 & #25)  
+#### 7.19 Getting data from database  
 ```
+// In /services/genreService.js
+
+    import http from "./httpService";
+
+    // http GET request to get genres from the database
+    export function getGenres() {
+       return http.get("http://localhost:3900/api/genres");
+    }
+
+// In /services/movieService.js
+
+    import http from "./httpService";
+
+    const apiEndpoint = "http://localhost:3900/api/movies";
+
+    // http GET request to get movies from the database
+    export function getMovies(){
+        return http.get(apiEndpoint);
+    }
+
+    // http DELETE request to delete a movie from the database based on movie id
+    export function deleteMovie(movieId){
+      return http.delete(apiEndpoint + "/" + movieId);
+    }
+
+// In movie.js
+
+import { getGenres } from "../services/genreService";
+import { getMovies, deleteMovie } from "../services/movieService";
+import { toast } from "react-toastify";
+
+  async componentDidMount() {
+    const { data } = await getGenres(); // Getting data from promise object
+    const genres = [{ _id: "", name: "All Genres" }, ...data]; // Populating the genres
+    
+    const { data: movies } = await getMovies(); // Populating the movies
+    this.setState({ movies, genres }); // Updating the view
+  }
+  
+    handleDelete = async (movie) => {
+    // Keeping reference to the original state
+    const originalMovies = this.state.movies;
+
+    // Updating the view before the server call, assuming it succeeds
+    const filterMovie = (m) => {
+      return m._id !== movie._id;
+    };
+    const movies = originalMovies.filter(filterMovie);
+    this.setState({ movies });
+
+    // Placing the server call inside try-catch block to detect error and reverting the view update back to the original state, if the server call fails
+    try{
+      await deleteMovie(movie._id);
+    } catch(ex){
+      if(ex.response && ex.response.status === 404){
+        toast.error("This movie has already been deleted")
+      }
+      this.setState({ originalMovies });
+    }
+  };
 
 ```
 #### 7.20 Extracting a Config File  
+Extracting a reusable Config module to access API endpoints globally
 ```
+// In /src/config.json
+
+{
+    "apiUrl": "http://localhost:3900/api"
+}
+
+// In /services/genreService.js
+
+    import http from "./httpService";
+    import config from "../config.json"; // Importing config to access API endpoints(now we will use config.apiUrl)
+
+    export function getGenres() {
+       return http.get(config.apiUrl + "/genres");
+    }
+
+// In /services/movieService.js
+
+    import http from "./httpService";
+    import config from "../config.json"; // Importing config to access API endpoints(now we will use config.apiUrl)
+
+    const apiEndpoint = config.apiUrl + "/movies";
+
+    export function getMovies(){
+        return http.get(apiEndpoint);
+    }
+
+    export function deleteMovie(movieId){
+      return http.delete(apiEndpoint + "/" + movieId);
+    }
+```
+#### 7.21 Populating Movie Form  
+```
+// In /services/movieService.js
+
+    import http from "./httpService";
+    import config from "../config.json";
+
+    const apiEndpoint = config.apiUrl + "/movies";
+    
+    // http GET request to get movies from the database
+    export function getMovies(){
+        return http.get(apiEndpoint);
+    }
+    
+    // http GET request to get a movie's data from the database based on movie id
+    export function getMovie(movieId){
+        return http.get(apiEndpoint + "/" + movieId);
+    }
+    
+    // http DELETE request to delete a movie from the database based on movie id
+    export function deleteMovie(movieId){
+      return http.delete(apiEndpoint + "/" + movieId);
+    }
+    
+// In movieForm.jsx
+
+import { getMovie } from "../services/movieService";
+import { getGenres } from "../services/genreService";
+
+  async populateGenres(){
+    const {data: genres} = await getGenres(); // Getting data property from promise object
+    this.setState({ genres }); // Updating the view
+  }
+
+  async populateMovie(){
+    // Placing the server call inside try-catch block to detect incorrect movie id and redirecting user to not-found page, if the response returns with error
+    try{
+      const movieId = this.props.match.params.id; 
+      if (movieId === "new") return;
+
+      const { data: movie } = await getMovie(movieId); // Getting data property from promise object
+      this.setState({ data: this.mapToViewModel(movie) }); // Populating the movie's data in movie form
+    } catch(ex){
+      if(ex.response && ex.response.status === 404)
+        this.props.history.replace("/not-found"); // redirecting user to not-found page
+    }
+  }
+
+  async componentDidMount() {
+    await this.populateGenres(); // Getting promise object to populate genres data
+    await this.populateMovie(); // Getting promise object to populate movie's data
+  }
 
 ```
-#### 7.21 Populating Movie Form (#28 & #29)  
+#### 7.22 Saving the Movie  
 ```
+// In /services/movieService.js
 
-```
-#### 7.22 Saving the Movie (#30 & #31)  
-```
+    import http from "./httpService";
+    import config from "../config.json";
 
+    const apiEndpoint = config.apiUrl + "/movies";
+    
+    // Refactoring code for movie url
+    function movieUrl(id){
+      return `${apiEndpoint}/${id}`;
+    }
+    
+    export function getMovies(){
+        return http.get(apiEndpoint);
+    }
+    
+    export function getMovie(movieId){
+      return http.get(movieUrl(movieId));
+    }
+    
+    export function saveMovie(movie){
+      // Updating movie using http PUT method
+      if(movie._id){
+        const body = {...movie}; // Cloning object to avoid directly modifying the original state of movie object
+        delete body._id; // REST API does not allow id property in body of the request
+        return http.put(movieUrl(movie._id), body);    
+      }
+      // Adding new movie using http POST method
+      return http.post(apiEndpoint, movie);
+    }
+    
+    export function deleteMovie(movieId){
+      return http.delete(movieUrl(movieId));
+    }
+    
+// In movieForm.jsx
+
+import { getMovie, saveMovie } from "../services/movieService";
+import { getGenres } from "../services/genreService";
+    ...
+    ...
+    doSubmit = async () => {
+        await saveMovie(this.state.data); // Saving data and getting response data from the promise object
+        this.props.history.push("/movies");
+    };
 ```
