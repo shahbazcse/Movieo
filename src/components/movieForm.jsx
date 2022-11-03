@@ -57,7 +57,7 @@ class MovieForm extends Form {
   }
 
   doSubmit = async () => {
-    await saveMovie(this.state.data);
+    await saveMovie(this.state.data); // Saving data and getting response data from the promise object
     this.props.history.push("/movies");
   };
 

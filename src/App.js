@@ -11,6 +11,7 @@ import LoginForm from './components/loginForm';
 import RegisterForm from './components/registerForm ';
 import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
+
 class App extends Component {
   render() {
     return (
