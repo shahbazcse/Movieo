@@ -1,5 +1,5 @@
 {
-  "name": "vidly",
+  "name": "movieo",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -9,6 +9,7 @@
     "axios": "^0.18.1",
     "bootstrap": "^4.1.1",
     "font-awesome": "^4.7.0",
+    "jwt-decode": "^2.2.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",

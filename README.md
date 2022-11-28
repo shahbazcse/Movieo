@@ -4310,8 +4310,8 @@ export default {
    ii. Open the app and connect to host    
                                   
 #### 7.17 Setting Up the Node Backend and Postman App  
-1. Download Vidly node backend: https://github.com/mosh-hamedani/vidly-api-node  
-    i. Clone the repository in the same directory containing the vidly app
+1. Download Movieo node backend:   
+    i. Clone the repository in the same directory containing the movieo app
 2. Postman Chrome Extension: https://chrome.google.com/webstore/detail/postman/fhbjgbiflinjbdggehcddcbncdddomop?hl=en  
     i. Open the extension and paste API endpoint url  
     ii. Perform CRUD Operations  
@@ -4323,7 +4323,7 @@ export default {
 
 {
   "jwtPrivateKey": "unsecureKey",
-  "db": "mongodb://localhost/vidly",
+  "db": "mongodb://localhost/movieo",
   "port": "3900",
   "requiresAuth": false
 }
