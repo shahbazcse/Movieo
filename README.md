@@ -129,6 +129,28 @@
     7.21 Populating Movie Form  
     7.22 Saving the Movie  
 
+8. Authentication and Authorization:
+
+    8.1 Registering a New User  
+    8.2 Submitting the Registration Form  
+    8.3 Handling Registration Errors  
+    8.4 Logging in a User  
+    8.5 Submitting the Login Form  
+    8.6 Handling Login Errors  
+    8.7 Storing the JWT  
+    8.8 Logging in the User upon Registration  
+    8.9 JSON Web Tokens (JWT)  
+    8.10 Getting the Current User  
+    8.11 Displaying Current User on NavBar  
+    8.12 Logging out a User  
+    8.13 Calling Protected API Endpoints  
+    8.14 Fixing Bi-directional Dependencies  
+    8.15 Authorization  
+    8.16 Showing/Hiding Elements based on the User  
+    8.17 Protecting Routes  
+    8.18 Extracting ProtectedRoute  
+    8.19 Redirecting after Login  
+    8.20 Hiding the Delete Column  
 ## 1. ES6 Refresher
 
 #### 1.1 Let vs Var vs Const
@@ -4585,4 +4607,85 @@ import { getGenres } from "../services/genreService";
         await saveMovie(this.state.data); // Saving data and getting response data from the promise object
         this.props.history.push("/movies");
     };
+```
+## 8. Authentication and Authorization:  
+#### 8.1 Registering a New User  
+```
+
+```
+#### 8.2 Submitting the Registration Form  
+```
+
+```
+#### 8.3 Handling Registration Errors  
+```
+
+```
+#### 8.4 Logging in a User  
+```
+
+```
+#### 8.5 Submitting the Login Form  
+```
+
+```
+#### 8.6 Handling Login Errors  
+```
+
+```
+#### 8.7 Storing the JWT  
+```
+
+```
+#### 8.8 Logging in the User upon Registration  
+```
+
+```
+#### 8.9 JSON Web Tokens (JWT)  
+```
+
+```
+#### 8.10 Getting the Current User  
+```
+
+```
+#### 8.11 Displaying Current User on NavBar  
+```
+
+```
+#### 8.12 Logging out a User  
+```
+
+```
+#### 8.13 Calling Protected API Endpoints  
+```
+
+```
+#### 8.14 Fixing Bi-directional Dependencies  
+```
+
+```
+#### 8.15 Authorization  
+```
+
+```
+#### 8.16 Showing/Hiding Elements based on the User  
+```
+
+```
+#### 8.17 Protecting Routes  
+```
+
+```
+#### 8.18 Extracting ProtectedRoute  
+```
+
+```
+#### 8.19 Redirecting after Login  
+```
+
+```
+#### 8.20 Hiding the Delete Column  
+```
+
 ```
