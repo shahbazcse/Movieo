@@ -4609,83 +4609,354 @@ import { getGenres } from "../services/genreService";
     };
 ```
 ## 8. Authentication and Authorization:  
-#### 8.1 Registering a New User  
+#### 8.1 Submitting the Registration Form  
+We will make a POST request from the Client to the API endpoint and pass the form data.
+```
+// In userService.js
+
+    import http from "./httpService";
+    import config from "../config.json";
+
+    const apiEndpoint = config.apiUrl + "/users"; // API endpoint to register users
+
+    // Making POST request to the API endpoint and passing form data
+    export function register(user){
+        return http.post(apiEndpoint, {
+            email: user.username,
+            password: user.password,
+            name: user.name
+        });
+    }
+
+// In registerForm.jsx
+
+    // Importing userService to make POST request from the registerForm to register new users
+    import * as userService from "../services/userService";
+
+    class RegisterForm extends Form {
+      ...
+      ...
+      doSubmit = async () => {
+        await userService.register(this.state.data); // passing form data to register method to make POST request
+      };
+
+      render() {
+        return (
+          ...
+          ...
+        );
+      }
+    }
+
+    export default RegisterForm;
+
+```
+#### 8.2 Handling Registration Errors  
+Using Try-Catch block to handle registration errors
+```
+// In registerForm.jsx
+
+    import * as userService from "../services/userService";
+
+    class RegisterForm extends Form {
+      ...
+      ...
+      doSubmit = async () => {
+        try{
+          await userService.register(this.state.data);
+        }
+        catch(ex){
+          if(ex.response && ex.response.status === 400){
+            const errors = {...this.state.errors};
+            errors.username = ex.response.data;
+            this.setState({ errors });
+          }
+        }
+      };
+
+      render() {
+        return (
+          ...
+          ...
+        );
+      }
+    }
+
+    export default RegisterForm;
+```
+#### 8.3 Submitting the Login Form  
+1. The Client will make a POST request to the API endpoint.
+2. The API will return a response with a JWT.
+3. Againt the Client will send this JWT back to the authorization API.
+4. If the JWT is valid, the user will be logged in. Otherwise, there will be an login error.
+```
+// In authService.js
+    import http from "./httpService";
+    import config from "../config.json";
+
+    const apiEndpoint = config.apiUrl + "/auth"; // API endpoint to login users
+
+    // Making POST request to the API endpoint and passing form data
+    export function login(user) {
+      return http.post(apiEndpoint, {
+        email: user.username,
+        password: user.password,
+      });
+    }
+
+// In loginForm.jsx
+    // Importing authService to make POST request from the loginForm to login users
+    import auth from "../services/authService";
+
+    class LoginForm extends Form {
+      ...
+      ...
+      doSubmit = async () => {
+        await auth.login(this.state.data); // passing form data to login method to make POST request
+      };
+
+      render() {
+        return (
+          ...
+          ...
+        );
+      }
+    }
+
+    export default LoginForm;
+```
+#### 8.4 Handling Login Errors  
+Using Try-Catch block to handle login errors
+```
+// In loginForm.jsx
+    import auth from "../services/authService";
+
+    class LoginForm extends Form {
+      ...
+      ...
+      doSubmit = async () => {
+        try{
+          await auth.login(this.state.data);
+        }
+        catch(ex){
+          if(ex.response && ex.response.status === 400){
+            const errors = { ...this.state.errors };
+            errors.username = ex.response.data;
+            this.setState({ errors });
+          }
+        }
+      };
+
+      render() {
+        return (
+          ...
+          ...
+        );
+      }
+    }
+
+    export default LoginForm;
+```
+#### 8.5 Storing the JWT  
+```
+// In loginForm.jsx
+    import auth from "../services/authService";
+
+    class LoginForm extends Form {
+      ...
+      ...
+      doSubmit = async () => {
+        try{
+          const { data: jwt } = await auth.login(this.state.data); // passing form data to login method to make POST request
+          localStorage.setItem("token", jwt); // Upon receiving a JWT as response from the API, we store the JWT in the browser local storage
+          window.location("/"); // If the JWT is valid, user is redirected to home, followed by a full page reload(window.location is used) 
+        }
+        catch(ex){
+          if(ex.response && ex.response.status === 400){
+            const errors = { ...this.state.errors };
+            errors.username = ex.response.data;
+            this.setState({ errors });
+          }
+        }
+      };
+
+      render() {
+        return (
+          ...
+          ...
+        );
+      }
+    }
+
+    export default LoginForm;
+```
+#### 8.6 Logging in the User upon Registration  
+1. Upon registering a user, user will be automatically redirected to home, skipping the login page.
+
+2. To access the JWT from the browser, we must whitelist or allow the x-auth-token in our backend POST request API(in register users or manage users.).
+    a. Header("access-control-expose-headers") should be added in generateAuhtToken() to whitelist x-auth-token in the browser.
+```
+// In registerForm.jsx
+
+    import * as userService from "../services/userService";
+
+    class RegisterForm extends Form {
+      ...
+      ...
+      doSubmit = async () => {
+        try{
+          const response = await userService.register(this.state.data); // passing form data to register method to make POST request
+          localStorage.setItem("token", response.headers["x-auth-token"]); // Upon receiving a JWT as response from the API, we store the JWT in the browser local storage
+          window.location("/"); // If the JWT is valid, user is redirected to home, followed by a full page reload(window.location is used) 
+        }
+        catch(ex){
+          if(ex.response && ex.response.status === 400){
+            const errors = {...this.state.errors};
+            errors.username = ex.response.data;
+            this.setState({ errors });
+          }
+        }
+      };
+
+      render() {
+        return (
+          ...
+          ...
+        );
+      }
+    }
+
+    export default RegisterForm;
+```
+#### 8.7 JSON Web Tokens (JWT)  
+JSON Web Token (JWT): https://jwt.io/  
+
+JWT has three parts:  
+1. Header: Includes the details of the encoding algorithm and the type of token  
+2. Payload:  
+    a. Includes the JSON Object containing the user data and creation time of token  
+    b. Hence, we can decode the web token, extract the attributes(user data) and we can easily use it anywhere in react app  
+3. Verify Signature:  
+    a. It is a unique digital signature that is generated based on the header, payload, and secret key(only available on the server)  
+    b. This prevents any malicious user from modifying a web token, as he/she cannot modify the secret key unless he/she breaks into the server and finds the secret key  
+
+#### 8.8 Getting the Current User  
+NPM JWT Decode: Install <code>jwt-decode@2.2.0</code> to decode a JWT and get the user data 
+```
+// In App.js
+import jwtDecode from "jwt-decode";
+
+class App extends Component {
+  state = {};
+
+  componentDidMount() {
+    try{
+      const jwt = localStorage.getItem("token"); // Getting token
+      const user = jwtDecode(jwt); // Decoding token and getting user data object
+      this.setState({ user });
+    }
+    catch(ex){} // Do nothing in event of no web token found error
+  }
+  render() {
+    const { user } = this.state;
+    return (
+      <React.Fragment>
+        <ToastContainer />
+        <NavBar user={user} />
+        ...
+        ...
+      </React.Fragment>
+    );
+  }
+}
+
+export default App;
+```
+#### 8.9 Displaying Current User on NavBar  
+```
+// In navBar.jsx
+const NavBar = ({ user }) => { // Passing user prop
+return (
+      <nav className="navbar navbar-light bg-light" style={{ padding: 0 }}>
+        <div className="navbar">
+          ...
+          ...
+          // Conditional rendering (if no user is logged in -> display Login and Register link in NavBar)
+          {!user && (
+            <React.Fragment>
+              <NavLink className="nav-item nav-link" to="/login">
+                Login
+              </NavLink>
+              <NavLink className="nav-item nav-link" to="/register">
+                Register
+              </NavLink>
+            </React.Fragment>
+          )}
+          // Conditional rendering (if a user is logged in -> display user's name and Logout link in NavBar)
+          {user && (
+            <React.Fragment>
+              <NavLink className="nav-item nav-link" to="/profile">
+                {user.name}
+              </NavLink>
+              <NavLink className="nav-item nav-link btn btn-outline-danger" to="/logout">
+                Logout
+              </NavLink>
+            </React.Fragment>
+          )}
+        </div>
+      </nav>
+    );
+}
+
+export default NavBar;
+```
+#### 8.10 Logging out a User  
+We will create a separate 'logout' component and implement the logout feature and then we will register a new '/logout' Route in App.js and then we will use the 'logout' component there
+```
+// In logout.jsx
+
+class Logout extends Component {
+    componentDidMount() {
+        localStorage.removeItem("token"); // Removing the token from the browser's local storage
+        window.location="/"; // Reloading the page
+    }
+
+    render() { 
+        return null;
+    }
+}
+ 
+export default Logout;
+```
+#### 8.11 Calling Protected API Endpoints  
 ```
 
 ```
-#### 8.2 Submitting the Registration Form  
+#### 8.12 Fixing Bi-directional Dependencies  
 ```
 
 ```
-#### 8.3 Handling Registration Errors  
+#### 8.13 Authorization  
 ```
 
 ```
-#### 8.4 Logging in a User  
+#### 8.14 Showing/Hiding Elements based on the User  
 ```
 
 ```
-#### 8.5 Submitting the Login Form  
+#### 8.15 Protecting Routes  
 ```
 
 ```
-#### 8.6 Handling Login Errors  
+#### 8.16 Extracting ProtectedRoute  
 ```
 
 ```
-#### 8.7 Storing the JWT  
+#### 8.17 Redirecting after Login  
 ```
 
 ```
-#### 8.8 Logging in the User upon Registration  
-```
-
-```
-#### 8.9 JSON Web Tokens (JWT)  
-```
-
-```
-#### 8.10 Getting the Current User  
-```
-
-```
-#### 8.11 Displaying Current User on NavBar  
-```
-
-```
-#### 8.12 Logging out a User  
-```
-
-```
-#### 8.13 Calling Protected API Endpoints  
-```
-
-```
-#### 8.14 Fixing Bi-directional Dependencies  
-```
-
-```
-#### 8.15 Authorization  
-```
-
-```
-#### 8.16 Showing/Hiding Elements based on the User  
-```
-
-```
-#### 8.17 Protecting Routes  
-```
-
-```
-#### 8.18 Extracting ProtectedRoute  
-```
-
-```
-#### 8.19 Redirecting after Login  
-```
-
-```
-#### 8.20 Hiding the Delete Column  
+#### 8.18 Hiding the Delete Column  
 ```
 
 ```
