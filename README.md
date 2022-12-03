@@ -131,26 +131,24 @@
 
 8. Authentication and Authorization:
 
-    8.1 Registering a New User  
-    8.2 Submitting the Registration Form  
-    8.3 Handling Registration Errors  
-    8.4 Logging in a User  
-    8.5 Submitting the Login Form  
-    8.6 Handling Login Errors  
-    8.7 Storing the JWT  
-    8.8 Logging in the User upon Registration  
-    8.9 JSON Web Tokens (JWT)  
-    8.10 Getting the Current User  
-    8.11 Displaying Current User on NavBar  
-    8.12 Logging out a User  
-    8.13 Calling Protected API Endpoints  
-    8.14 Fixing Bi-directional Dependencies  
-    8.15 Authorization  
-    8.16 Showing/Hiding Elements based on the User  
-    8.17 Protecting Routes  
-    8.18 Extracting ProtectedRoute  
-    8.19 Redirecting after Login  
-    8.20 Hiding the Delete Column  
+    8.1 Submitting the Registration Form  
+    8.2 Handling Registration Errors  
+    8.3 Submitting the Login Form  
+    8.4 Handling Login Errors  
+    8.5 Storing the JWT  
+    8.6 Logging in the User upon Registration  
+    8.7 JSON Web Tokens (JWT)  
+    8.8 Getting the Current User  
+    8.9 Displaying Current User on NavBar  
+    8.10 Logging out a User  
+    8.11 Refactoring (Extracting JWT authorization)
+    8.12 Calling Protected API Endpoints  
+    8.13 Fixing Bi-directional Dependencies  
+    8.14 Authorization  
+    8.15 Showing/Hiding Elements based on the User  
+    8.16 Protecting Routes  
+    8.17 Redirecting after Login  
+    8.18 Hiding the Delete Column  
 ## 1. ES6 Refresher
 
 #### 1.1 Let vs Var vs Const
@@ -4928,35 +4926,503 @@ class Logout extends Component {
  
 export default Logout;
 ```
-#### 8.11 Calling Protected API Endpoints  
+#### 8.11 Refactoring (Extracting JWT authorization)  
+Moving authorization implementation in a common reusable component authService.js
 ```
+// In authService.js
+    import jwtDecode from "jwt-decode";
+    import http from "./httpService";
+    import config from "../config.json";
+
+    const apiEndpoint = config.apiUrl + "/auth";
+    const tokenKey = "token";
+
+    export async function login(user) {
+      const { data: jwt } = await http.post(apiEndpoint, {
+        email: user.username,
+        password: user.password,
+      });
+      localStorage.setItem(tokenKey, jwt);
+    }
+
+    export function loginWithJwt(jwt) {
+      localStorage.setItem(tokenKey, jwt);
+    }
+
+    export function logout() {
+      localStorage.removeItem(tokenKey);
+    }
+
+    export function getCurrentUser() {
+      try {
+        const jwt = localStorage.getItem(tokenKey);
+        return jwtDecode(jwt);
+      } catch (ex) {
+        return null;
+      }
+    }
+
+    // Exporting methods
+    export default {
+      login,
+      loginWithJwt,
+      logout,
+      getCurrentUser
+    };
+
+// In logout.jsx
+    import { Component } from 'react';
+    import auth from "../services/authService"; // Importing authService to use logout method
+
+    class Logout extends Component {
+        componentDidMount() {
+            auth.logout(); // Calling logout method from authService
+            window.location = "/";
+        }
+
+        render() { 
+            return null;
+        }
+    }
+
+    export default Logout;
+
+// In loginForm.jsx
+    import auth from "../services/authService"; // Importing authService to use login method
+
+    class LoginForm extends Form {
+      ...
+      ...
+      doSubmit = async () => {
+        try{
+          await auth.login(this.state.data); // Calling login method from authService and passing user data
+          window.location = "/";
+        }
+        catch(ex){
+          if(ex.response && ex.response.status === 400){
+            const errors = { ...this.state.errors };
+            errors.username = ex.response.data;
+            this.setState({ errors });
+          }
+        }
+      };
+
+      render() {
+        ...
+        ...
+      }
+    }
+
+    export default LoginForm;
+
+// In registerForm.jsx
+    import auth from "../services/authService"; // Importing authService to use loginWithJwt method
+
+    class RegisterForm extends Form {
+      ...
+      ...
+      doSubmit = async () => {
+        try{
+          const response = await userService.register(this.state.data); 
+          auth.loginWithJwt(response.headers['x-auth-token']); // Calling loginWithJwt method from authService and passing the token received in response
+          window.location = "/";
+        }
+        catch(ex){
+          if(ex.response && ex.response.status === 400){
+            const errors = {...this.state.errors};
+            errors.username = ex.response.data;
+            this.setState({ errors });
+          }
+        }
+      };
+
+      render() {
+        return (
+          ...
+          ...
+        );
+      }
+    }
+
+    export default RegisterForm;
+
+// In App.js
+    import auth from "./services/authService"; // Importing authService to use getCurrentUser method
+
+    class App extends Component {
+      state = {};
+
+      componentDidMount() {
+        const user = auth.getCurrentUser(); // Calling getCurrentUser method from authService
+        this.setState({ user });
+      }
+
+      render() {
+        ...
+        ...
+      }
+    }
+
+    export default App;
 
 ```
-#### 8.12 Fixing Bi-directional Dependencies  
+#### 8.12 Calling Protected API Endpoints  
+Protected API Endpoints only lets valid users who are logged in to perform data manipulation in the application (CRUD Operation)
 ```
+// In httpService.js
+    import axios from "axios";
+    import auth from "./services/authService";
+    ...
+    ...
+    // Axios will include this token in the header everytime it makes a HTTP request(POST, GET, DELETE,etc)
+    axios.defaults.headers.common['x-auth-token'] = auth.getJwt(); // Calling getJwt method to get the user's token and storing it in the header
+    ...
+    ...
+
+// In authService.js
+    import jwtDecode from "jwt-decode";
+    import http from "./httpService";
+    import config from "../config.json";
+
+    const apiEndpoint = config.apiUrl + "/auth";
+    const tokenKey = "token";
+    ...
+    ...
+    // Getting token of current session from the browser
+    export function getJwt() {
+      return localStorage.getItem(tokenKey);
+    }
+
+    export default {
+      login,
+      loginWithJwt,
+      logout,
+      getCurrentUser,
+      getJwt
+    };
 
 ```
-#### 8.13 Authorization  
+#### 8.13 Fixing Bi-directional Dependencies  
+We must avoid any bi-directional dependency situation to happen in React.  
+Here, we have to fix <code>httpservice <-> authService</code> bi-directional dependency situation.
 ```
+// In httpService.js
+  import axios from "axios";
+    ...
+    ...
+  // Storing token in header of HTTP request
+  function setJwt(jwt) {
+    axios.defaults.headers.common['x-auth-token'] = jwt;
+  }
+
+  export default {
+    get: axios.get,
+    post: axios.post,
+    put: axios.put,
+    delete: axios.delete,
+    setJwt
+  };
+
+// In authService.js
+    import jwtDecode from "jwt-decode";
+    import http from "./httpService";
+    import config from "../config.json";
+
+    const apiEndpoint = config.apiUrl + "/auth";
+    const tokenKey = "token";
+    ...
+    ...
+    http.setJwt(getJwt()); // Calling setJwt method from httpService and passing token via getJwt method
+    
+    export function getJwt() {
+      return localStorage.getItem(tokenKey);
+    }
+
+    export default {
+      login,
+      loginWithJwt,
+      logout,
+      getCurrentUser,
+      getJwt
+    };
+```
+#### 8.14 Authorization  
+We tend to let an admin make few core operation to databse such as DELETE, CREATE, etc. So there must be a property(isAdmin) to identify a user who is also an admin. Hence, we will now require a authorized user who is also an admin to perform the above said core operations.
+```
+// In MongoDB databse, inside user colletion
+...
+{
+  "_id": {
+    "$oid": "6384a25d78fa71961fd9b7e4"
+  },
+  "name": "Admin",
+  "email": "admin@domain.com",
+  "password": "$2a$10$kvLRmjNRKSge6xJNN78sueQ73W6Bgjnefj88AKK32odGIV6ZAW8Fa",
+  "__v": 0,
+  "isAdmin": true // this property will make this user an admin and let him perform core operations
+}
+...
+```
+#### 8.15 Showing/Hiding Elements based on the User  
+We may want to hide or show certain features in React App based on whether the user is logged in or not.  
+To pass additional props to a child component, we use render attribute(instead of component attribute) in its Route.
+```
+// In App.js
+    class App extends Component {
+      state = {};
+
+      componentDidMount() {
+        const user = auth.getCurrentUser();
+        this.setState({ user });
+      }
+
+      render() {
+        const { user } = this.state;
+        return (
+          <React.Fragment>
+            <ToastContainer />
+            <NavBar user={user} />
+            <main className="container">
+              <Switch>
+                ...
+                ...
+                // Passing all props along with the 'user' object to the 'Movies' component
+                <Route
+                  path="/movies"
+                  render={(props) => <Movies {...props} user={user} />}
+                />
+                ...
+                ...
+              </Switch>
+            </main>
+          </React.Fragment>
+        );
+      }
+    }
+
+    export default App;
+
+// In movies.jsx
+class Movies extends Component {
+  ...
+  ...
+  render() {
+    const { user } = this.props;
+
+    if (count === 0) {
+      return <p>There are no movies in the database.</p>;
+    }
+
+    return (
+      <React.Fragment>
+        <div className="row">
+          ...
+          ...
+          <div className="col">
+            // Conditional rendering: if a user is logged in, 'Add Movie' button will appear, otherwise not.
+            {user && <Link to="/movies/new">
+              <button
+                type="button"
+                id="add-movie"
+                className="btn btn-primary"
+                style={{ marginBottom: 20 }}
+              >
+                Add Movie
+              </button>
+            </Link>}
+            ...
+            ...
+          </div>
+        </div>
+      </React.Fragment>
+    );
+  }
+}
+
+export default Movies;
 
 ```
-#### 8.14 Showing/Hiding Elements based on the User  
+#### 8.16 Protecting Routes  
+We must protect a route from unauthorized access by a non-user using the API endpoint in the url.  
+So we create and use 'ProtectedRoute' component to prevent access to certain component's route to a non-user.
 ```
+// In protectedRoute.jsx
+    import { Route, Redirect } from 'react-router-dom';
+    import auth from "../../services/authService";
 
-```
-#### 8.15 Protecting Routes  
-```
+    const ProtectedRoute = ({ path, component: Component, render, ...rest }) => {
+      return (
+        <Route
+          {...rest}
+          render={(props) => {
+            if (!auth.getCurrentUser()) return <Redirect to="/login" />;
+            return Component ? <Component {...props} /> : render(props);
+          }}
+        />
+      );
+    };
 
-```
-#### 8.16 Extracting ProtectedRoute  
-```
+    export default ProtectedRoute;
+
+// In App.js
+    import ProtectedRoute from "./components/common/protectedRoute"; // Importing ProtectedRoute component
+    
+    class App extends Component {
+      state = {};
+
+      componentDidMount() {
+        const user = auth.getCurrentUser();
+        this.setState({ user });
+      }
+
+      render() {
+        const { user } = this.state;
+        return (
+          <React.Fragment>
+            <ToastContainer />
+            <NavBar user={user} />
+            <main className="container">
+              <Switch>
+                ...
+                ...
+                // Using ProtectedRoute component to prevent access to MovieForm component from a non-user
+                <ProtectedRoute path="/movies/:id" component={MovieForm} />
+                ...
+                ...
+              </Switch>
+            </main>
+          </React.Fragment>
+        );
+      }
+    }
+
+    export default App;
 
 ```
 #### 8.17 Redirecting after Login  
+1. We must take care of the situation when a user visits a protected component and gets redirected to the login page.  
+2. After logging in, the user must be redirected to the component he wanted to go to, in the beginning. Instead of the home page.
 ```
+// In protectedRoute.jsx
+    import React from "react";
+    import { Route, Redirect } from 'react-router-dom';
+    import auth from "../../services/authService";
+
+    const ProtectedRoute = ({ path, component: Component, render, ...rest }) => {
+      return (
+        <Route
+          {...rest}
+          render={(props) => {
+            // Redirect route used to redirect user to the login page, and after logging in, it will redirect user to the previous location in the state
+            if (!auth.getCurrentUser()) return <Redirect to={{
+                pathname: "/login",
+                state: { from: props.location }
+            }} />;
+            return Component ? <Component {...props} /> : render(props);
+          }}
+        />
+      );
+    };
+
+    export default ProtectedRoute;
+
+// In loginForm.jsx
+    import { Redirect } from "react-router-dom";
+    import auth from "../services/authService";
+    
+    class LoginForm extends Form {
+      ...
+      ...
+      doSubmit = async () => {
+        try{
+          await auth.login(this.state.data);
+          const { state } = this.props.location; // protectedRoute passed the state including the previous location
+          window.location = state ? state.from.pathname : "/"; // If state is present then the user will be redirected to the previous location, if the state is not present then, user will be redirected to the home page
+        }
+        catch(ex){
+          if(ex.response && ex.response.status === 400){
+            const errors = { ...this.state.errors };
+            errors.username = ex.response.data;
+            this.setState({ errors });
+          }
+        }
+      };
+      render() {
+        // If the user is already logged in and attempts to access the login page, then user will be redirected to the home page
+        if(auth.getCurrentUser()) return <Redirect to="/" />
+        return (
+          <div>
+            ...
+            ...
+          </div>
+        );
+      }
+    }
+
+    export default LoginForm;
 
 ```
 #### 8.18 Hiding the Delete Column  
+We may want to hide or show certain features in React App based on whether the user is logged in and an admin or not. 
 ```
+// In moviesTable.jsx
+    import auth from "../services/authService";
+
+    class MoviesTable extends Component {
+      columns = [
+        {
+          path: "title",
+          label: "Title",
+          content: (movie) => (
+            <Link to={`/movies/${movie._id}`}>{movie.title}</Link>
+          ),
+        },
+        { path: "genre.name", label: "Genre" },
+        { path: "numberInStock", label: "Stock" },
+        { path: "dailyRentalRate", label: "Rate" },
+        {
+          key: "like",
+          content: (movie) => (
+            <Like liked={movie.liked} onClick={() => this.props.onLike(movie)} />
+          ),
+        },
+      ];
+
+      // Delete column containing Delete buttons for each row
+      deleteColumn = {
+        key: "delete",
+        content: (movie) => (
+          <button
+            onClick={() => this.props.onDelete(movie)}
+            className="btn btn-danger btn-sm"
+          >
+            Delete
+          </button>
+        ),
+      };
+
+      // constructor called to validate a user who must also be an admin, only then the Delete column will be added to the view
+      constructor() {
+        super();
+        const user = auth.getCurrentUser();
+        if (user && user.isAdmin) {
+          this.columns.push(this.deleteColumn);
+        }
+      }
+
+      render() {
+        const { movies, onSort, sortColumn } = this.props;
+        return (
+          <Table
+            columns={this.columns}
+            data={movies}
+            sortColumn={sortColumn}
+            onSort={onSort}
+          />
+        );
+      }
+    }
+
+    export default MoviesTable;
 
 ```
