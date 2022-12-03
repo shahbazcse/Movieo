@@ -2,7 +2,7 @@
 
 1. ES6 Refresher:
 
-    1.1 Let vs Var vs Const  
+    1.1 [Let vs Var vs Const](#11-let-vs-var-vs-const)  
     1.2 Objects  
     1.3 this Keyword  
     1.4 Binding this  
