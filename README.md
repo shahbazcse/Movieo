@@ -149,6 +149,21 @@
     8.16 Protecting Routes  
     8.17 Redirecting after Login  
     8.18 Hiding the Delete Column  
+
+9. React Advanced Concepts:  
+
+    9.1 Higher Order Components  
+    9.2 React Hooks  
+    9.3 useState Hook  
+    9.4 useEffect Hook  
+    9.5 Custom Hooks  
+    9.6 Fetching Data with Hooks  
+    9.7 React Context  
+    9.8 Context in Class Component  
+    9.9 Context in Functional Component  
+    9.10 Updating the Context  
+    9.11 Consuming Multiple Context  
+
 ## 1. ES6 Refresher
 
 #### 1.1 Let vs Var vs Const
@@ -5424,5 +5439,51 @@ We may want to hide or show certain features in React App based on whether the u
     }
 
     export default MoviesTable;
+
+```
+## 9. React Advanced Concepts:  
+
+#### 9.1 Higher Order Components  
+```
+
+```
+#### 9.2 React Hooks  
+```
+
+```
+#### 9.3 useState Hook  
+```
+
+```
+#### 9.4 useEffect Hook  
+```
+
+```
+#### 9.5 Custom Hooks  
+```
+
+```
+#### 9.6 Fetching Data with Hooks  
+```
+
+```
+#### 9.7 React Context  
+```
+
+```
+#### 9.8 Context in Class Component  
+```
+
+```
+#### 9.9 Context in Functional Component  
+```
+
+```
+#### 9.10 Updating the Context  
+```
+
+```
+#### 9.11 Consuming Multiple Context  
+```
 
 ```
