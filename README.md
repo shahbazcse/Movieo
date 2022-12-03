@@ -141,7 +141,7 @@
     8.8 Getting the Current User  
     8.9 Displaying Current User on NavBar  
     8.10 Logging out a User  
-    8.11 Refactoring (Extracting JWT authorization)
+    8.11 Refactoring (Extracting JWT authorization)  
     8.12 Calling Protected API Endpoints  
     8.13 Fixing Bi-directional Dependencies  
     8.14 Authorization  
@@ -4791,8 +4791,8 @@ Using Try-Catch block to handle login errors
 #### 8.6 Logging in the User upon Registration  
 1. Upon registering a user, user will be automatically redirected to home, skipping the login page.
 
-2. To access the JWT from the browser, we must whitelist or allow the x-auth-token in our backend POST request API(in register users or manage users.).
-    a. Header("access-control-expose-headers") should be added in generateAuhtToken() to whitelist x-auth-token in the browser.
+2. To access the JWT from the browser, we must whitelist or allow the x-auth-token in our backend POST request API(in register users or manage users.).  
+    a. Header <code>("access-control-expose-headers")</code> should be added in generateAuhtToken() to whitelist <code>x-auth-token</code> in the browser.
 ```
 // In registerForm.jsx
 
