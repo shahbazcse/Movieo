@@ -3,18 +3,18 @@
 1. ES6 Refresher:
 
     1.1 [Let vs Var vs Const](#11-let-vs-var-vs-const)  
-    1.2 Objects  
-    1.3 this Keyword  
-    1.4 Binding this  
-    1.5 Arrow Functions  
-    1.6 Arrow Functions and this  
-    1.7 Array.map Method  
-    1.8 Object Destructuring  
-    1.9 Spread Operator  
-    1.10 Classes  
-    1.11 Inheritance  
-    1.12 Modules  
-    1.13 Named and Default Exports  
+    1.2 [Objects](#12-objects)  
+    1.3 [this Keyword](#13-this-keyword)  
+    1.4 [Binding this](#14-binding-this)  
+    1.5 [Arrow Functions](#15-arrow-functions)  
+    1.6 [Arrow Functions and this](#16-arrow-functions-and-this)  
+    1.7 [Array.map Method](#17-arraymap-method)  
+    1.8 [Object Destructuring](#18-object-destructuring)  
+    1.9 [Spread Operator](#19-spread-operator)  
+    1.10 [Classes](#110-classes)  
+    1.11 [Inheritance](#111-inheritance)  
+    1.12 [Modules](#112-modules)  
+    1.13 [Named and Default Exports/Imports](#113-named-and-default-exportsimports)  
 
 2. Components:
 
