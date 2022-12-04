@@ -5444,46 +5444,545 @@ We may want to hide or show certain features in React App based on whether the u
 ## 9. React Advanced Concepts:  
 
 #### 9.1 Higher Order Components  
+1.  Higher Order Components are used to reuse logic across multiple components.  
+2. Concretely, a Higher Order Component is a function that takes a component and returns a new component.  
+3. Example: <code>const EnhancedComponent = higherOrderComponent(WrappedComponent);</code>
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/89023719/205494142-bd508ecf-457c-4f2f-9ecd-8da72aa3372d.png" height="500px" width="850px">  
+</p>
+
 ```
+// In withTooltip.jsx (Higher Order Component)
+    import React from "react";
+    
+    // Passing a Wrapped Component in the HOC
+    function withTooltip(Component) {
+      return class withTooltip extends React.Component {
+        state ={
+            showTooltip: false
+        };
+        
+        // Logic
+        mouseOver = () => {
+            this.setState({
+                showTooltip: true
+            });
+        }
+
+        mouseOut = () => {
+            this.setState({
+                showTooltip: false
+            });
+        }
+
+        render() {
+          return (
+            <div onMouseOver={this.mouseOver} onMouseOut={this.mouseOut}> // Event handlers added
+              <Component {...this.props} showTooltip={this.state.showTooltip} /> // Passing props along with logic props to the Wrapped Component
+            </div>
+          );
+        }
+      };
+    }
+
+    export default withTooltip;
+
+// In Movie.jsx (Wrapped Component)
+    import React, { Component } from 'react';
+    import withTooltip from './withTooltip'; // Importing HOC 'withTooltip'
+
+    class Movie extends Component {
+        render() {
+            return (
+                <div>
+                    Movie
+                    {this.props.showTooltip && <div>Some tooltip</div>} // Using props to access logic from HOC
+                </div>
+            );
+        }
+    }
+
+    export default withTooltip(Movie); // Passing 'Movie' Component (Wrapped Component) in the 'withTooltip' Component (HOC)
 
 ```
 #### 9.2 React Hooks  
-```
+i. In React 16.8, we have Hooks that lets us use state and other React features with Functional Components without using classes, which was not possbile in the earlier version.  
+ii. Hooks are features that allows us to “hook into” React state and lifecycle features from functional components.  
+iii. Hooks cannot be called inside Loops, Conditions, or Nested Functions.  
 
-```
+<strong>Types of React Hooks:</strong>
+
+<strong>Basic Hooks:</strong>
+1. useState()
+2. useEffect()
+3. useContext()
+
+<strong>Additional Hooks:</strong>
+1. useReducer()
+2. useMemo()
+3. useCallback()
+4. useImperativeHandle()
+5. useDebugValue()
+6. useRef()
+7. useLayoutEffect()
+
 #### 9.3 useState Hook  
+1. useState Hook allows us to track state in a functional component  
+2. Example: <code>const [count, setCount] = useState(0);</code>  
+3. Here, useState is initialized to <strong>0</strong> value, <code>count</code> is our current state and <code>setCount</code> is the function that is used to update our state after each event
 ```
+// In Counter.jsx
+    import React, { useState } from 'react'; // Importing useState Hook from React
+    import useDocumentTitle from './useDocumentTitle';
+
+    function Counter(props) {
+        // Using useState Hook
+        const [count, setCount] = useState(0);
+        const [name, setName] = useState('');
+
+        return (
+            <React.Fragment>
+                <input type="text" onChange={e => setName(e.target.value)} /> // Updating value using useState function 'setName' on each onChange event
+                <div>
+                    {name} has clicked {count} times! // Displaying updated values
+                </div>
+                <button onClick={() => setCount(count+1)}>Increase</button> // Updating value using useState function 'setCount' on each onClick event
+            </React.Fragment>
+        );
+    }
+
+    export default Counter;
 
 ```
 #### 9.4 useEffect Hook  
+1. In a Class Component, we have componentDidMount(), componentDidUpdate(), and ComponentWillUnmount() lifecycle methods of the component. Here the logics are divided among these methods.  
+2. In a Functional Component, the useEffect() Hook can implement all the lifecycle methods at once.  
+3. Dependency array '[ ]' can also be passed as second argument to the useEffect Hook in case we want the hook to update the component based on some parameter (e.g.: [count] means component will be updated only when value of 'count' changes).
 ```
+// In Counter.jsx
+    import React, { useState } from 'react';
+    import useDocumentTitle from './useDocumentTitle';
+
+    function Counter(props) {
+        const [count, setCount] = useState(0);
+        const [name, setName] = useState('');
+        
+        // All lifecycle methods are implemented in useEffect at once in Functional Component
+
+        // componentDidMount for first time
+        useEffect(() => {
+            // componentDidUpdate updates for as long as changes are made to the app component
+            document.title = `${name} has clicked ${count} times!`;
+            
+            // ComponentWillUnmount takes place after each update
+            return () => {
+                console.log("Component Unmounted");
+            }
+        }, []); // Dependency array
+
+        return (
+            <React.Fragment>
+                <input type="text" onChange={e => setName(e.target.value)} />
+                <div>
+                    {name} has clicked {count} times!
+                </div>
+                <button onClick={() => setCount(count+1)}>Increase</button>
+            </React.Fragment>
+        );
+    }
+
+    export default Counter;
 
 ```
 #### 9.5 Custom Hooks  
+We can use hooks as common logics, put it in a separate module and we can use it across multiple components in the App.
 ```
+// In useDocumentTitle.js (Reusable Hook Module)
+    import { useEffect } from 'react';
+
+    export default function useDocumentTitle(title){
+        useEffect(() => {
+            document.title = title;
+
+            return () => {
+                console.log("Clean up");
+            }
+        });
+    }
+
+// In Counter.jsx
+    import React, { useState } from 'react';
+    import useDocumentTitle from './useDocumentTitle'; // Importing Hook Module
+
+    function Counter(props) {
+        const [count, setCount] = useState(0);
+        const [name, setName] = useState('');
+
+        useDocumentTitle(`${name} has clicked ${count} times!`); // Passing argument to the hook
+
+        return (
+            <React.Fragment>
+                <input type="text" onChange={e => setName(e.target.value)} />
+                <div>
+                    {name} has clicked {count} times!
+                </div>
+                <button onClick={() => setCount(count+1)}>Increase</button>
+            </React.Fragment>
+        );
+    }
+
+    export default Counter;
 
 ```
 #### 9.6 Fetching Data with Hooks  
 ```
+// In Users.jsx
+    import React, { useEffect } from "react";
+    import axios from "axios";
+    import { useState } from "react";
+
+    function Users(props) {
+      // Using useState hook
+      const [users, setUsers] = useState([]);
+
+      useEffect(() => {
+        async function getUsers() {
+          const response = await axios(
+            "https://jsonplaceholder.typicode.com/users"
+          );
+          setUsers(response.data); // Updating value using useState function 'setUsers'
+        }
+        getUsers();
+      });
+
+      return (
+        <div>
+          <ul>
+            // Populating API data in the component using useState 'users' variable
+            {users.map((user) => (
+              <tr key={user.id}>
+                <td>{user.name}</td>
+                <td>{user.username}</td>
+                <td>{user.email}</td>
+                <td>{user.phone}</td>
+                <td>{user.website}</td>
+              </tr>
+            ))}
+          </ul>
+        </div>
+      );
+    }
+
+    export default Users;
 
 ```
 #### 9.7 React Context  
-```
+1. In a typical React application, data is passed top-down (parent to child) via <code>props</code>, but such usage can be cumbersome for certain types of props (e.g. locale preference, UI theme) that are required by many components within an application.  
+2. <code>Context</code> provides a way to share values like these between components without having to explicitly pass a prop through every level of the tree.  
+3. We use these <code>Context APIs</code> to share data between components:  
+    a. <code>React.createContext</code>: It creates a Context object  
+    b. <code>Context.Provider</code>: Every Context object comes with a Provider React component that allows consuming components to subscribe to context changes  
+    c. <code>Class.contextType</code>: The contextType property on a class can be assigned a Context object, it lets you consume the nearest current value of that Context type using this.context  
+    d. <code>Context.Consumer</code>: 'Consumer' is just a function that the consumer component gives us as a prop. And in the return of that function, we can return and use 'value'. Also it requires a function as a child  
+    e. <code>Context.displayName</code>: Context object accepts a 'displayName' string property to identify unique context in a Component Tree having multiple contexts  
 
-```
 #### 9.8 Context in Class Component  
 ```
+// In App.js
+    import UserContext from "./context/userContext"; // Importing Context Object
+
+    class App extends Component {
+      state = {
+        currentUser: {
+          name: "John",
+        },
+      };
+
+      render() {
+        return (
+            // Context Provider wrapped around 'MoviePage' component to provide 'value' to Context Consumer
+            <UserContext.Provider value={this.state.currentUser}> // 'value' prop passed in Context Provider
+              <div>
+                <MoviePage /> // Returning 'MoviePage' Component
+              </div>
+            </UserContext.Provider>
+        );
+      }
+    }
+
+    export default App;
+
+// In userContext.js
+    import React from 'react';
+
+    const UserContext = React.createContext(); // Creating Context Object
+    UserContext.displayName = "UserContext" // Changing name of this Context Object
+
+    export default UserContext;
+
+// In MoviePage.jsx
+    import React, { Component } from 'react';
+    import MovieList from './MovieList';
+
+    class MoviePage extends Component {
+        render() {
+            return (
+                <div>
+                    <MovieList /> // Returning 'MovieList' Component
+                </div>
+            );
+        }
+    }
+
+    export default MoviePage;
+
+// In MovieList.jsx
+    import React, { Component } from "react";
+    import UserContext from "./userContext"; // Importing Context Object
+
+    class MovieList extends Component {
+      static contextType = UserContext; // assigns value of Context in this Component to 'contextType'
+        
+      // Check contextType value using this.context
+      componentDidMount() {
+        console.log("context", this.context);
+      }
+
+      render() {
+        return (
+          // Context Consumer wrapped around 'div' to get 'value' from Context Provider
+          <UserContext.Consumer>
+            {(currentUser) => (<div>Movie List: {currentUser.name}</div>)}
+          </UserContext.Consumer>
+        );
+      }
+    }
+
+    export default MovieList;
 
 ```
 #### 9.9 Context in Functional Component  
+1. <code>useContext() hook</code>: Accepts a context object (the value returned from React.createContext) and returns the current context value for that context  
+2. We can avoid using Consumer in functional components unlike Class components  
+3. Just using the useContext() hook, takes care of getting the current context value of the nearest Context Object   
 ```
+// In MovieRow.jsx
+    import React, { useContext } from 'react';
+    import UserContext from './userContext'; // Importing Context Object
+
+    function MovieRow(props) {
+        const currentUser = useContext(UserContext); // using 'useContext' hook to get current context value of 'UserContext' object
+
+        return (
+            <div>
+                Movie Row: {currentUser.name} // Using current value in the component
+            </div>
+        );
+    }
+
+    export default MovieRow;
+
+// In MovieList.jsx
+    import React, { Component } from "react";
+    import UserContext from "./userContext"; // Importing Context Object
+    import MovieRow from "./MovieRow"; // Importing 'MovieRow' component
+
+    class MovieList extends Component {
+      static contextType = UserContext;
+
+      componentDidMount() {
+        console.log("context", this.context);
+      }
+
+      render() {
+        return (
+          <UserContext.Consumer>
+            {(userContext) => (
+              <div>
+                Movie List: {userContext.name} <MovieRow /> // Adding MovieRow component
+              </div>
+            )}
+          </UserContext.Consumer>
+        );
+      }
+    }
+
+    export default MovieList;
 
 ```
 #### 9.10 Updating the Context  
 ```
+// In App.js
+    import React, { Component } from "react";
+    import MoviePage from "./context/MoviePage";
+    import UserContext from "./context/userContext";
+    import Login from "./context/Login";
+
+    class App extends Component {
+      // Updating the Context value (currentUser)
+      handleLoggedIn = (username) => {
+        console.log("Getting the user" + username);
+        const user = { name: "Tom" };
+        this.setState({ currentUser: user });
+      };
+
+      state = {
+        currentUser: {
+          name: null,
+        },
+      };
+
+      render() {
+        return (
+            // Passing 'value' as props from Provider to Consumers
+            <UserContext.Provider
+              value={{
+                currentUser: this.state.currentUser,
+                onLoggedIn: this.handleLoggedIn,
+              }}
+            >
+              <div>
+                <MoviePage /> // Added MoviePage Component (it can consume the 'value' props)
+                <Login /> // Added Login Component (it can consume the 'value' props)
+              </div>
+            </UserContext.Provider>
+        );
+      }
+    }
+
+    export default App;
+
+// In Login.jsx
+    import React, { useContext } from 'react';
+    import UserContext from './userContext';
+
+    function Login(props) {
+        const userContext = useContext(UserContext);
+
+        return (
+            <div>
+                // onClick event to update the currentUser
+                <button onClick={() => userContext.onLoggedIn("username")}>Login</button>
+            </div>
+        );
+    }
+
+    export default Login;
+
+// In MovieList.jsx
+    import React, { Component } from "react";
+    import UserContext from "./userContext";
+    import MovieRow from "./MovieRow";
+
+    class MovieList extends Component {
+      static contextType = UserContext;
+
+      componentDidMount() {
+        console.log("context", this.context);
+      }
+
+      render() {
+        return (
+          <UserContext.Consumer>
+            {(userContext) => (
+              <div>
+                // Logic to display currentUser's name
+                Movie List: {userContext.currentUser ? userContext.currentUser.name : ""} <MovieRow />
+              </div>
+            )}
+          </UserContext.Consumer>
+        );
+      }
+    }
+
+    export default MovieList;
+
+// In MovieRow.jsx
+    import React, { useContext } from 'react';
+    import UserContext from './userContext';
+
+    function MovieRow(props) {
+        const userContext = useContext(UserContext); // using useContext() hook to get current context value of 'UserContext' object
+
+        return (
+            <div>
+                // Logic to display currentUser's name
+                Movie Row: {userContext.currentUser ? userContext.currentUser.name : ""}
+            </div>
+        );
+    }
+
+    export default MovieRow;
 
 ```
 #### 9.11 Consuming Multiple Context  
+1. In a React App, there usually exists multiple contexts or context added to an existing context.  
+2. We can wrap a parent Context Provider around a child component intended to consume parent's context value
 ```
+// In cartContext.js
+    import React from 'react';
+
+    const CartContext = React.createContext();
+    CartContext.displayName = "CartContext"
+
+    export default CartContext;
+
+// In App.js
+    import CartContext from "./context/cartContext"; // Importing CartContext object
+
+    class App extends Component {
+      handleLoggedIn = (username) => {
+        console.log("Getting the user" + username);
+        const user = { name: "Tom" };
+        this.setState({ currentUser: user });
+      };
+
+      state = {
+        currentUser: {
+          name: null,
+        },
+      };
+
+      render() {
+        return (
+          // Wrapping CartContext Provider around child components and passing 'value' prop to be consumed by the consumers
+          <CartContext.Provider value={{ cart: [] }}>
+            <UserContext.Provider
+              value={{
+                currentUser: this.state.currentUser,
+                onLoggedIn: this.handleLoggedIn,
+              }}
+            >
+              <div>
+                <MoviePage />
+                <Login />
+              </div>
+            </UserContext.Provider>
+          </CartContext.Provider>
+        );
+      }
+    }
+
+    export default App;
+
+// In MovieRow.jsx
+    import React, { useContext } from 'react';
+    import UserContext from './userContext';
+    import CartContext from './cartContext';
+
+    function MovieRow(props) {
+        const userContext = useContext(UserContext);
+        const cartContext = useContext(CartContext); // using useContext() hook to get current context value of 'CartContext' object
+
+        console.log("Cart Context", cartContext); // Logging cartContext 'value'
+
+        return (
+            <div>
+                Movie Row: {userContext.currentUser ? userContext.currentUser.name : ""}
+            </div>
+        );
+    }
+
+    export default MovieRow;
 
 ```
