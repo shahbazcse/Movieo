@@ -18,151 +18,151 @@
 
 2. Components:
 
-    2.1 Specifying Children  
-    2.2 Embedded Expressions  
-    2.3 Setting Attributes  
-    2.4 Rendering Classes Dynamically  
-    2.5 Rendering Lists  
-    2.6 Conditional Rendering  
-    2.7 Handling Events  
-    2.8 Binding Event Handlers  
-    2.9 Updating the State  
-    2.10 Change of State  
-    2.11 Passing Event Arguments  
+    2.1 [Specifying Children](#21-specifying-children)  
+    2.2 [Embedded Expressions](#22-embedded-expressions)  
+    2.3 [Setting Attributes](#23-setting-attributes)  
+    2.4 [Rendering Classes Dynamically](#24-rendering-classes-dynamically)  
+    2.5 [Rendering Lists](#25-rendering-lists)  
+    2.6 [Conditional Rendering](#26-conditional-rendering)  
+    2.7 [Handling Events](#27-handling-events)  
+    2.8 [Binding Event Handlers](#28-binding-event-handlers)  
+    2.9 [Updating the State](#29-updating-the-state)  
+    2.10 [What Happens When State Changes](#210-what-happens-when-state-changes)  
+    2.11 [Passing Event Arguments](#211-passing-event-arguments)  
 
 3. Composing Components:
 
-    3.1 Composing Components  
-    3.2 Passing Data to Components  
-    3.3 Passing Children  
-    3.4 Debugging React Apps  
-    3.5 Props vs State  
-    3.6 Raising and Handling Events  
-    3.7 Updating the State  
-    3.8 Single Source of Truth  
-    3.9 Removing the Local State  
-    3.10 Multiple Components in Sync  
-    3.11 Lifting the State Up  
-    3.12 Stateless Functional Components  
-    3.13 Destructuring Arguments  
-    3.14 Lifecycle Hooks  
-    3.15 Mounting Phase  
-    3.16 Updating Phase  
-    3.17 Unmounting Phase  
+    3.1 [Composing Components](#31-composing-components)  
+    3.2 [Passing Data to Components](#32-passing-data-to-components)  
+    3.3 [Passing Children](#33-passing-children)  
+    3.4 [Debugging React Apps](#34-debugging-react-apps)  
+    3.5 [Props vs State](#35-props-vs-state)  
+    3.6 [Raising and Handling Events](#36-raising-and-handling-events)  
+    3.7 [Updating the State](#37-updating-the-state)  
+    3.8 [Single Source of Truth](#38-single-source-of-truth)  
+    3.9 [Removing the Local State](#39-removing-the-local-state)  
+    3.10 [Multiple Components in Sync](#310-multiple-components-in-sync)  
+    3.11 [Lifting the State Up](#311-lifting-the-state-up)  
+    3.12 [Stateless Functional Components](#312-stateless-functional-components)  
+    3.13 [Destructuring Arguments](#313-destructuring-arguments)  
+    3.14 [Lifecycle Hooks](#314-lifecycle-hooks)  
+    3.15 [Mounting Phase](#315-mounting-phase)  
+    3.16 [Updating Phase](#316-updating-phase)  
+    3.17 [Unmounting Phase](#317-unmounting-phase)  
 
 4. Pagination, Filtering, and Sorting:
 
-    4.1 Pagination - Component Interface  
-    4.2 Pagination - Displaying Pages  
-    4.3 Pagination - Handling Page Changes  
-    4.4 Pagination - Paginating Data  
-    4.5 Pagination - Type Checking with PropTypes  
-    4.6 Filtering - Component Interface  
-    4.7 Filtering - Displaying Items  
-    4.8 Filtering - Default Props  
-    4.9 Filtering - Handling Selection  
-    4.10 Filtering - Implementing Filtering  
-    4.11 Filtering - Adding All Genres  
-    4.12 Sorting - Extracting MoviesTable  
-    4.13 Sorting - Raising the Sort Event  
-    4.14 Sorting - Implementing Sorting  
-    4.15 Sorting - Moving Responsibility  
-    4.16 Sorting - Extracting TableHeader  
-    4.17 Sorting - Extracting TableBody  
-    4.18 Sorting - Rendering Cell Content  
-    4.19 Sorting - Unique Keys  
-    4.20 Sorting - Adding the Sort icons  
-    4.21 Sorting - Extracting Table  
-    4.22 Sorting - Extracting a Method  
-    4.23 Destructuring Arguments  
+    4.1 [Pagination - Component Interface](#41-pagination---component-interface)  
+    4.2 [Pagination - Displaying Pages](#42-pagination---displaying-pages)  
+    4.3 [Pagination - Handling Page Changes](#43-pagination---handling-page-changes)  
+    4.4 [Pagination - Paginating Data](#44-pagination---paginating-data)  
+    4.5 [Pagination - Type Checking with PropTypes](#45-pagination---type-checking-with-proptypes)  
+    4.6 [Filtering - Component Interface](#46-filtering---component-interface)  
+    4.7 [Filtering - Displaying Items](#47-filtering---displaying-items)  
+    4.8 [Filtering - Default Props](#48-filtering---default-props)  
+    4.9 [Filtering - Handling Selection](#49-filtering---handling-selection)  
+    4.10 [Filtering - Implementing Filtering](#410-filtering---implementing-filtering)  
+    4.11 [Filtering - Adding All Genres](#411-filtering---adding-all-genres)  
+    4.12 [Sorting - Extracting MoviesTable](#412-sorting---extracting-moviestable)  
+    4.13 [Sorting - Raising the Sort Event](#413-sorting---raising-the-sort-event)  
+    4.14 [Sorting - Implementing Sorting](#414-sorting---implementing-sorting)  
+    4.15 [Sorting - Moving Responsibility](#415-sorting---moving-responsibility)  
+    4.16 [Sorting - Extracting TableHeader](#416-sorting---extracting-tableheader)  
+    4.17 [Sorting - Extracting TableBody](#417-sorting---extracting-tablebody)  
+    4.18 [Sorting - Rendering Cell Content](#418-sorting---rendering-cell-content)  
+    4.19 [Sorting - Unique Keys](#419-sorting---unique-keys)  
+    4.20 [Sorting - Adding the Sort icons](#420-sorting---adding-the-sort-icons)  
+    4.21 [Sorting - Extracting Table](#421-sorting---extracting-table)  
+    4.22 [Sorting - Extracting a Method](#422-sorting---extracting-a-method)  
+    4.23 [Destructuring Arguments](#423-destructuring-arguments)  
 
 5. Routing:
 
-    5.1 Adding React Router  
-    5.2 Adding Routes  
-    5.3 Adding the NavBar  
-    5.4 Linking to the MovieForm  
+    5.1 [Adding React Router](#51-adding-react-router)  
+    5.2 [Adding Routes](#52-adding-routes)  
+    5.3 [Adding the NavBar](#53-adding-the-navbar)  
+    5.4 [Linking to the MovieForm](#54-linking-to-the-movieform)  
 
 6. Forms:
 
-    6.1 Introduction  
-    6.2 Building a Bootstrap Form  
-    6.3 Handling Form Submission  
-    6.4 Refs  
-    6.5 Controlled Elements  
-    6.6 Handling Multiple Inputs  
-    6.7 Common Errors  
-    6.8 Extracting a Reusable Input  
-    6.9 Validation  
-    6.10 Basic Validation Implementation  
-    6.11 Displaying Validation Errors  
-    6.12 Validation on Change  
-    6.13 Exploring Joi  
-    6.14 Validating a Form using Joi  
-    6.15 Validating a Field using Joi  
-    6.16 Disabling the Submit Button  
-    6.17 Extracting a Reusable Form  
-    6.18 Extracting Helper Rendering Methods  
+    6.1 [Introduction](#61-introduction)  
+    6.2 [Building a Bootstrap Form](#62-building-a-bootstrap-form)  
+    6.3 [Handling Form Submission](#63-handling-form-submission)  
+    6.4 [Refs](#64-refs)  
+    6.5 [Controlled Elements](#65-controlled-elements)  
+    6.6 [Handling Multiple Inputs](#66-handling-multiple-inputs)  
+    6.7 [Common Errors](#67-common-errors)  
+    6.8 [Extracting a Reusable Input](#68-extracting-a-reusable-input)  
+    6.9 [Validation](#69-validation)  
+    6.10 [Basic Validation Implementation](#610-basic-validation-implementation)  
+    6.11 [Displaying Validation Errors](#611-displaying-validation-errors)  
+    6.12 [Validation on Change](#612-validation-on-change)  
+    6.13 [Exploring Joi](#613-exploring-joi)  
+    6.14 [Validating a Form using Joi](#614-validating-a-form-using-joi)  
+    6.15 [Validating a Field using Joi](#615-validating-a-field-using-joi)  
+    6.16 [Disabling the Submit Button](#616-disabling-the-submit-button)  
+    6.17 [Extracting a Reusable Form](#617-extracting-a-reusable-form)  
+    6.18 [Extracting Helper Rendering Methods](#618-extracting-helper-rendering-methods)  
 
 7. Calling Backend Services:
 
-    7.1 JSON Placeholder  
-    7.2 HTTP Clients  
-    7.3 Getting Data  
-    7.4 Creating Data  
-    7.5 Lifecycle of a request  
-    7.6 Updating Data  
-    7.7 Deleting Data  
-    7.8 Optimistic vs Pessimistic Updates  
-    7.9 Expected vs Unexpected Errors  
-    7.10 Handling Unexpected Errors Globally  
-    7.11 Extracting a Reusable HTTP Service  
-    7.12 Extracting a Config Module  
-    7.13 Displaying Toast Notification  
-    7.14 Logging Errors  
-    7.15 Extracting a Logger Service  
-    7.16 Installing MongoDB on Linux  
-    7.17 Setting Up the Node Backend and Postman App  
-    7.18 Adding HTTP and Log Services  
-    7.19 Getting data from database  
-    7.20 Extracting a Config File  
-    7.21 Populating Movie Form  
-    7.22 Saving the Movie  
+    7.1 [JSON Placeholder](#71-json-placeholder)  
+    7.2 [HTTP Clients](#72-http-clients)  
+    7.3 [Getting Data](#73-getting-data)  
+    7.4 [Creating Data](#74-creating-data)  
+    7.5 [Lifecycle of a request](#75-lifecycle-of-a-request)  
+    7.6 [Updating Data](#76-updating-data)  
+    7.7 [Deleting Data](#77-deleting-data)  
+    7.8 [Optimistic vs Pessimistic Updates](#78-optimistic-vs-pessimistic-updates)  
+    7.9 [Expected vs Unexpected Errors](#79-expected-vs-unexpected-errors)  
+    7.10 [Handling Unexpected Errors Globally](#710-handling-unexpected-errors-globally)  
+    7.11 [Extracting a Reusable HTTP Service](#711-extracting-a-reusable-http-service)  
+    7.12 [Extracting a Config Module](#712-extracting-a-config-module)  
+    7.13 [Displaying Toast Notification](#713-displaying-toast-notification)  
+    7.14 [Logging Errors](#714-logging-errors)  
+    7.15 [Extracting a Logger Service](#715-extracting-a-logger-service)  
+    7.16 [Installing MongoDB on Linux](#716-installing-mongodb-on-linux)  
+    7.17 [Setting Up the Node Backend and Postman App](#717-setting-up-the-node-backend-and-postman-app)  
+    7.18 [Adding HTTP and Log Services](#718-adding-http-and-log-services)  
+    7.19 [Getting data from database](#719-getting-data-from-database)  
+    7.20 [Extracting a Config File](#720-extracting-a-config-file)  
+    7.21 [Populating Movie Form](#721-populating-movie-form)  
+    7.22 [Saving the Movie](#722-saving-the-movie)  
 
 8. Authentication and Authorization:
 
-    8.1 Submitting the Registration Form  
-    8.2 Handling Registration Errors  
-    8.3 Submitting the Login Form  
-    8.4 Handling Login Errors  
-    8.5 Storing the JWT  
-    8.6 Logging in the User upon Registration  
-    8.7 JSON Web Tokens (JWT)  
-    8.8 Getting the Current User  
-    8.9 Displaying Current User on NavBar  
-    8.10 Logging out a User  
-    8.11 Refactoring (Extracting JWT authorization)  
-    8.12 Calling Protected API Endpoints  
-    8.13 Fixing Bi-directional Dependencies  
-    8.14 Authorization  
-    8.15 Showing/Hiding Elements based on the User  
-    8.16 Protecting Routes  
-    8.17 Redirecting after Login  
-    8.18 Hiding the Delete Column  
+    8.1 [Submitting the Registration Form](#81-submitting-the-registration-form)  
+    8.2 [Handling Registration Errors](#82-handling-registration-errors)  
+    8.3 [Submitting the Login Form](#83-submitting-the-login-form)  
+    8.4 [Handling Login Errors](#84-handling-login-errors)  
+    8.5 [Storing the JWT](#85-storing-the-jwt)  
+    8.6 [Logging in the User upon Registration](#86-logging-in-the-user-upon-registration)  
+    8.7 [JSON Web Tokens (JWT)](#87-json-web-tokens-jwt)  
+    8.8 [Getting the Current User](#88-getting-the-current-user)  
+    8.9 [Displaying Current User on NavBar](#89-displaying-current-user-on-navbar)  
+    8.10 [Logging out a User](#810-logging-out-a-user)  
+    8.11 [Refactoring (Extracting JWT authorization)](#811-refactoring-extracting-jwt-authorization)  
+    8.12 [Calling Protected API Endpoints](#812-calling-protected-api-endpoints)  
+    8.13 [Fixing Bi-directional Dependencies](#813-fixing-bi-directional-dependencies)  
+    8.14 [Authorization](#814-authorization)  
+    8.15 [Showing/Hiding Elements based on the User](#815-showinghiding-elements-based-on-the-user)  
+    8.16 [Protecting Routes](#816-protecting-routes)  
+    8.17 [Redirecting after Login](#817-redirecting-after-login)  
+    8.18 [Hiding the Delete Column](#818-hiding-the-delete-column)  
 
 9. React Advanced Concepts:  
 
-    9.1 Higher Order Components  
-    9.2 React Hooks  
-    9.3 useState Hook  
-    9.4 useEffect Hook  
-    9.5 Custom Hooks  
-    9.6 Fetching Data with Hooks  
-    9.7 React Context  
-    9.8 Context in Class Component  
-    9.9 Context in Functional Component  
-    9.10 Updating the Context  
-    9.11 Consuming Multiple Context  
+    9.1 [Higher Order Components](#91-higher-order-components)  
+    9.2 [React Hooks](#92-react-hooks)  
+    9.3 [useState Hook](#93-usestate-hook)  
+    9.4 [useEffect Hook](#94-useeffect-hook)  
+    9.5 [Custom Hooks](#95-custom-hooks)  
+    9.6 [Fetching Data with Hooks](#96-fetching-data-with-hooks)  
+    9.7 [React Context](#97-react-context)  
+    9.8 [Context in Class Component](#98-context-in-class-component)  
+    9.9 [Context in Functional Component](#99-context-in-functional-component)  
+    9.10 [Updating the Context](#910-updating-the-context)  
+    9.11 [Consuming Multiple Context](#911-consuming-multiple-context)  
 
 ## 1. ES6 Refresher
 
